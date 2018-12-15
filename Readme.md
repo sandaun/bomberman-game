@@ -8,7 +8,7 @@ The game screen will be a board with fixed (non-destroyable) obstacles and rando
 The game finishes when the player gets the key.
 
 
-## MVP (DOM - CANVAS)
+## MVP
 ### Technique
 Html5 __Canvas__ and Vanilla __Javascript__
 
