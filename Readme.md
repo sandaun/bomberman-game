@@ -13,6 +13,7 @@ The game finishes when the player gets the key.
 Html5 __Canvas__ and Vanilla __Javascript__
 
 ### Game
+* Create states (start screen, game screen and game over screen states)
 * Create the board
 * Create a player in the board
 * Create key obstacle
@@ -25,7 +26,7 @@ Html5 __Canvas__ and Vanilla __Javascript__
 * Bombs will only destroy random obstacles at their immediate side
 ### Add bonus items
 * Flames: each one will increase bomb power
-* Bombs: PLayer will be able to throw more bombs
+* Bombs: Player will be able to throw more bombs
 ### Add random obstacles
 * Random obstacles will hide items and the key
 ### Add enemies
@@ -40,7 +41,7 @@ Html5 __Canvas__ and Vanilla __Javascript__
 * Add imagery to game, player and enemies from Star Wars
 ### Add new characters in Start Screen
 ### Levels
-* Each will level will increase number of enemies and their speed
+* Each level will increase number of enemies and their speed
 
 ## Data structure
 * Class Game
