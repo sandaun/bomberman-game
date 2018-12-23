@@ -4,25 +4,26 @@ class Player {
     this.column = 50;
     this.height = 8; 
     this.width = 8;
-    this.direction = 'right';
+    this.direction = 'up';
     this.intervalId = undefined;
     this.maxRows = maxRows;
     this.maxColumns = maxColumns;
   }
 
-  _moveDirection () {
+  moveDirection () {
     switch (this.direction) {
       case 'up':
-        this.row -= 10;
-        break;
-      case 'down':
-        this.row += 10;
-        break;
-      case 'left':
+        console.log("you are calling up");
         this.column -= 10;
         break;
-      case 'right':
+      case 'down':
         this.column += 10;
+        break;
+      case 'left':
+        this.row -= 10;
+        break;
+      case 'right':
+        this.row += 10;
         break;
     }
 

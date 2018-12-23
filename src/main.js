@@ -4,8 +4,6 @@ document.onload = function() {
   const canvas = document.getElementById('bomberman');
   const ctx = canvas.getContext('2d');
   const widthCell = 10;
-  
-  playButton.onclick = letsPlay;
 
   const game = new Game({
     rows: canvas.width / widthCell,
@@ -14,16 +12,17 @@ document.onload = function() {
     ctx: ctx
   });
 
-  function letsPlay () {
-    canvas.style = 'display: block';
-    begin.style = 'display: none';
-    game.drawBoard();
-    game.drawPlayer();
-  }
+  canvas.style = 'display: block';
+  begin.style = 'display: none';
 
-  // game.start((points) => {
-  //   console.log(points);
-  // });
+  // playButton.onclick = function () {
+  //   canvas.style = 'display: block';
+  //   begin.style = 'display: none';
+  // };
+
+  game.start((points) => {
+    console.log(points);
+  });
 
   // game.onGameOver = () => {
   //   let gameOver = document.getElementById('gameover');
