@@ -82,4 +82,4 @@ URls for the project repo and deploy
 
 ### Slides
 URls for the project presentation (slides)
-[https://slides.com/oriolcarbo]
+[https://slides.com/oriolcarbo/oriol-carbo#/]
