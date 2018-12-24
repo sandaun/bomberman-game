@@ -1,7 +1,7 @@
 class Player {
   constructor(maxRows, maxColumns) {
-    this.row = 50;
-    this.column = 50;
+    this.row = 400; // Player position initial
+    this.column = 50; // Player position initial
     this.height = 8; 
     this.width = 8;
     this.direction = 'up';

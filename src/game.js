@@ -10,12 +10,36 @@ class Game {
     this.intervalGame = undefined;
     // this.updatePointsCB = undefined;
     // this.points = 0;
+    this.grid = [
+      ['','','','','','','','','','','','',''],
+      ['','B','','B','','B','','B','','B','','B',''],
+      ['','','','','','','','','','','','',''],
+      ['','B','','B','','B','','B','','B','','B',''],
+      ['','','','','','','','','','','','',''],
+      ['','B','','B','','B','','B','','B','','B',''],
+      ['','','','','','','','','','','','',''],
+      ['','B','','B','','B','','B','','B','','B',''],
+      ['','','','','','','','','','','','',''],
+      ['','B','','B','','B','','B','','B','','B',''],
+      ['','','','','','','','','','','','',''],
+    ];
   }
 
-  // --------------- DRAWING THE BOARD ----------------
+  // --------------- BOARD FUNCTIONS ----------------
   drawBoard () {
     this.ctx.fillStyle = "#41ae41";
-    this.ctx.fillRect(10,10, this.rows * 10, this.columns * 10);
+    this.ctx.fillRect(0,0, this.rows * 10, this.columns * 10);
+  }
+  
+  drawBricks () {
+    for (let i = 0; i < this.grid.length; i++) {
+      for (let j = 0; j < this.grid[i].length; j++) {
+        if (this.grid[i][j] === 'B') {
+        this.ctx.fillStyle = 'orange';
+        this.ctx.fillRect(j * 50, i * 50, 50, 50);
+        }
+      }
+    }
   }
 
   // --------------- PLAYER FUNCTIONS ------------------
@@ -61,6 +85,7 @@ class Game {
   update() {
     this.clear();
     this.drawBoard();
+    this.drawBricks();
     this.drawPlayer();
     this.intervalGame = window.requestAnimationFrame(this.update.bind(this));
   }
