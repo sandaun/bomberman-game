@@ -3,7 +3,7 @@ document.onload = function() {
   const begin = document.getElementById('begin');
   const canvas = document.getElementById('bomberman');
   const ctx = canvas.getContext('2d');
-  const widthCell = 10;
+  const widthCell = 50;
 
   const game = new Game({
     rows: canvas.width / widthCell,

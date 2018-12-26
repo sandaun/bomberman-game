@@ -1,9 +1,9 @@
 class Player {
   constructor(maxRows, maxColumns) {
-    this.row = 400; // Player position initial
-    this.column = 50; // Player position initial
-    this.height = 8; 
-    this.width = 8;
+    this.positionX = 0; // Player position initial
+    this.positionY = 0; // Player position initial
+    this.height = 50; 
+    this.width = 50;
     this.direction = 'up';
     this.intervalId = undefined;
     this.maxRows = maxRows;
@@ -13,17 +13,24 @@ class Player {
   moveDirection () {
     switch (this.direction) {
       case 'up':
-        console.log("you are calling up");
-        this.column -= 10;
+        if (this.positionY > 0) {
+          this.positionY -= 10;
+        }
         break;
       case 'down':
-        this.column += 10;
+        if (this.positionY < (this.maxColumns * 50 - this.height)) {
+          this.positionY += 10;
+        }
         break;
       case 'left':
-        this.row -= 10;
+        if (this.positionX > 0) {
+          this.positionX -= 10;
+        }
         break;
       case 'right':
-        this.row += 10;
+        if (this.positionX < (this.maxRows * 50 - this.width)) {
+          this.positionX += 10;
+        }  
         break;
     }
 
