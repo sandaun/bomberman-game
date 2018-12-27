@@ -70,24 +70,30 @@ class Game {
     document.onkeydown = (e) => {
       switch (e.keyCode) {
         case 38: //arrow up
-        console.log(this.player.positionX/50);
-        console.log(this.player.positionY/50);
+          console.log(this.player.positionX/50);
+          console.log(this.player.positionY/50);
           this.player.direction = 'up';
-          if (!this.checkCollision(this.player.positionX / 50, this.player.positionY / 50)) {
-          this.player.moveDirection();
-          }
+          if(!this.checkCollision(this.player.positionX / 50, (this.player.positionY - 10) / 50)){
+            this.player.moveDirection();
+          };
           break;
         case 40: //arrow down
           this.player.direction = 'down';
-          this.player.moveDirection();
+          if(!this.checkCollision(this.player.positionX / 50, (this.player.positionY + 10) / 50)){
+            this.player.moveDirection();
+          }
           break;
         case 37: //arrow left
           this.player.direction = 'left';
+          if(!this.checkCollision((this.player.positionX - 10) / 50, this.player.positionY / 50)){
             this.player.moveDirection();
+          }
           break;
         case 39: //arrow right
           this.player.direction = 'right';
-          this.player.moveDirection();
+          if(!this.checkCollision((this.player.positionX + 10) / 50, this.player.positionY / 50)){
+            this.player.moveDirection();
+          }
           break; 
         // case 80: // p pause
         //   this.snake.intervalId ? this.snake.stop() : this.snake.start()
