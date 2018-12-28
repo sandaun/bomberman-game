@@ -2,21 +2,24 @@ document.onload = function() {
   const playButton = document.getElementById('playMe');
   const begin = document.getElementById('begin');
   const canvas = document.getElementById('bomberman');
+  const playAgainButton = document.getElementById('playAgain');
+  const gameOver = document.getElementById('gameover');
   const ctx = canvas.getContext('2d');
   const widthCell = 50;
 
   const game = new Game({
+    widthCell: widthCell,
     rows: canvas.width / widthCell,
     columns: canvas.height / widthCell,
-    player: new Player(canvas.width / widthCell, canvas.height / widthCell),
+    // player: new Player(canvas.width / widthCell, canvas.height / widthCell),
     ctx: ctx
   });
 
-  canvas.style = 'display: block';
+  canvas.style = 'display: block'; // DELETE WHEN GAME IS READY AND UNCOMMENT LINES BELOW: PLAYBUTTON.ONCLICK
   begin.style = 'display: none';
 
   // playButton.onclick = function () {
-  //   canvas.style = 'display: block';
+  //   canvas.style = 'display: flex';
   //   begin.style = 'display: none';
   // };
 
@@ -24,10 +27,13 @@ document.onload = function() {
     console.log(points);
   });
 
-  // game.onGameOver = () => {
-  //   let gameOver = document.getElementById('gameover');
-  //   canvas.style = 'display: none';
-  //   gameOver.style = 'display: block';
-  // }
+  game.onGameOver = () => {
+    canvas.style = 'display: none';
+    gameOver.style = 'display: flex';
+  }
+
+  playAgainButton.onclick = function () {
+    location.reload(true);
+  };
 
 }();

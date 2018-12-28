@@ -1,0 +1,34 @@
+.container{
+  margin: 0 auto;
+  width: 85%;
+}
+
+.begin {
+  flex-direction: column;
+  align-items: center;
+}
+
+.canvas {
+  margin-top: 50px;
+  display: flex;
+  justify-content: center;
+}
+
+.gameover {
+  flex-direction: column;
+  align-items: center;
+}
+
+.button {
+  background:#3f46ad;
+  border:none;
+  border-radius:5px;
+  width:20%;
+  padding: 20px 20px;
+  color:white;
+  text-transform:uppercase;
+  font-family: sans-serif;
+  font-style:bold;
+  font-size: .9rem;
+  font-weight: 700;
+}

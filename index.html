@@ -3,18 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styles/styles.css">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
 
     <title>Bomberman Game</title>
 </head>
 <body>
-    <div id="begin" style="display: block">
-        <h1 class="test">Bomberman Game</h1>
-        <button id="playMe">Play!</button>
+    <div class="begin" id="begin" style="display: flex">
+        <h1>Bomberman Game</h1>
+        <button class="button" id="playMe">Play!</button>
     </div>
-    <canvas id="bomberman" width="650" height="550" style="display: none"></canvas>
-    <div id="gameover" style="display: none">
-        Game Over
+    <div class="canvas">
+        <canvas id="bomberman" width="750" height="650" style="display: none"></canvas>
+    </div>
+    <div class="gameover" id="gameover" style="display: none">
+        <h1>Game Over</h1>
+        <button class="button" id="playAgain">Play Again!</button>
     </div>
     <script type="text/javascript" src="src/game.js"></script>
     <script type="text/javascript" src="src/player.js"></script>

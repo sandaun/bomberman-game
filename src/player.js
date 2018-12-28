@@ -1,7 +1,8 @@
 class Player {
-  constructor(maxRows, maxColumns) {
-    this.positionX = 0; // Player position initial
-    this.positionY = 0; // Player position initial
+  constructor(maxRows, maxColumns, widthCell) {
+    this.positionX = 50; // Player position initial
+    this.positionY = 50; // Player position initial
+    this.widthCell = widthCell; // Cell size if needed
     this.height = 50; 
     this.width = 50;
     this.direction = 'up';
