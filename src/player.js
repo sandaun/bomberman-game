@@ -1,5 +1,5 @@
 class Player {
-  constructor(maxRows, maxColumns, widthCell) {
+  constructor(maxColumns, maxRows, widthCell) {
     this.positionX = 50; // Player position initial
     this.positionY = 50; // Player position initial
     this.widthCell = widthCell; // Cell size if needed
@@ -14,24 +14,24 @@ class Player {
   moveDirection () {
     switch (this.direction) {
       case 'up':
-        if (this.positionY > 0) {
+       // if (this.positionY > 0) {
           this.positionY -= 10;
-        }
+       // }
         break;
       case 'down':
-        if (this.positionY < (this.maxColumns * 50 - this.height)) {
+       // if (this.positionY < (this.maxColumns * 50 - this.height)) {
           this.positionY += 10;
-        }
+       // }
         break;
       case 'left':
-        if (this.positionX > 0) {
+       // if (this.positionX > 0) {
           this.positionX -= 10;
-        }
+       // }
         break;
       case 'right':
-        if (this.positionX < (this.maxRows * 50 - this.width)) {
+       // if (this.positionX < (this.maxRows * 50 - this.width)) {
           this.positionX += 10;
-        }  
+       // }  
         break;
     }
 

@@ -9,19 +9,19 @@ document.onload = function() {
 
   const game = new Game({
     widthCell: widthCell,
-    rows: canvas.width / widthCell,
-    columns: canvas.height / widthCell,
+    columns: canvas.width / widthCell,
+    rows: canvas.height / widthCell,
     // player: new Player(canvas.width / widthCell, canvas.height / widthCell),
     ctx: ctx
   });
 
-  canvas.style = 'display: block'; // DELETE WHEN GAME IS READY AND UNCOMMENT LINES BELOW: PLAYBUTTON.ONCLICK
-  begin.style = 'display: none';
+  // canvas.style = 'display: block'; // DELETE WHEN GAME IS READY AND UNCOMMENT LINES BELOW: PLAYBUTTON.ONCLICK
+  // begin.style = 'display: none';
 
-  // playButton.onclick = function () {
-  //   canvas.style = 'display: flex';
-  //   begin.style = 'display: none';
-  // };
+  playButton.onclick = function () {
+    canvas.style = 'display: flex';
+    begin.style = 'display: none';
+  };
 
   game.start((points) => {
     console.log(points);
