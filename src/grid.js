@@ -29,8 +29,11 @@ class Grid {
     //   ['B','B','B','B','B','B','B','B','B','B','B','B','B','B','B'],
     // ];
     this.gameGrid = this.generateGrid(); // COMMENT THE ABOVE HARDCODED GRID
-
+    this.buildFixedBricks();
+    this.randomGridPos = this.randomGridLoop();
+    this.buildKey();
   }
+
   generateGrid () {
     let newGrid = new Array(this.maxRows);
 
@@ -61,6 +64,28 @@ class Grid {
             this.gameGrid[i][j] = this.gridElements.brick;
           }
         }
+      }
+    }
+  }
+
+  buildKey () {
+    if (this.randomGridPos != null && this.randomGridPos.length > 0) {
+      this.gameGrid[this.randomGridPos[0]][this.randomGridPos[1]] = 'K';
+    }
+  }
+
+  randomGridLoop() {
+    let isBlank = false;
+    while(!isBlank){
+      let cols = this.gameGrid[0].length;
+      let rows = this.gameGrid.length;
+      let posX = Math.floor(Math.random() * (cols - 1));
+      let posY = Math.floor(Math.random() * (rows - 1));
+      if (this.gameGrid[posY][posX] === this.gridElements.empty) {
+        isBlank = true;
+        let positionArray = [];
+        positionArray.push(posY, posX);
+        return positionArray;
       }
     }
   }
