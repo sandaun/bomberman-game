@@ -15,13 +15,13 @@ document.onload = function() {
     ctx: ctx
   });
 
-  // canvas.style = 'display: block'; // DELETE WHEN GAME IS READY AND UNCOMMENT LINES BELOW: PLAYBUTTON.ONCLICK
-  // begin.style = 'display: none';
+  canvas.style = 'display: block'; // DELETE WHEN GAME IS READY AND UNCOMMENT LINES BELOW: PLAYBUTTON.ONCLICK
+  begin.style = 'display: none';
 
-  playButton.onclick = function () {
-    canvas.style = 'display: flex';
-    begin.style = 'display: none';
-  };
+  // playButton.onclick = function () {
+  //   canvas.style = 'display: flex';
+  //   begin.style = 'display: none';
+  // };
 
   game.start((points) => {
     console.log(points);

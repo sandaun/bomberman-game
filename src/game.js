@@ -1,6 +1,7 @@
 class Game {
   constructor(options) {
     this.player = new Player(options.columns, options.rows, options.widthCell);
+    this.grid2 = new Grid(options.columns, options.rows, options.widthCell); // CHANGE TO grid WHEN FINISHED constructing
     this.grid = [
       ['B','B','B','B','B','B','B','B','B','B','B','B','B','B','B'],
       ['B','','','','','','','','','','','','','','B'],
@@ -23,6 +24,7 @@ class Game {
     this.ctx = options.ctx;
     this.intervalGame = undefined;
     this.randomGridPos = this.randomGridLoop();
+    // this.gridtest = this.grid2.generateGrid(); // COMMENT THE ABOVE HARDCODED GRID
     // this.enemy = options.enemy;
     // this.randomObstacle = undefined;
     // this.updatePointsCB = undefined;
@@ -36,9 +38,10 @@ class Game {
   }
 
   drawBricks () {
-    for (let i = 0; i < this.grid.length; i++) {
-      for (let j = 0; j < this.grid[i].length; j++) {
-        if (this.grid[i][j] === 'B') {
+    this.grid2.buildFixedBricks();
+    for (let i = 0; i < this.grid2.gameGrid.length; i++) {
+      for (let j = 0; j < this.grid2.gameGrid[i].length; j++) {
+        if (this.grid2.gameGrid[i][j] === this.grid2.gridElements.brick) {
         this.ctx.fillStyle = 'gray';
         this.ctx.fillRect(j * this.widthCell, i * this.widthCell, this.widthCell, this.widthCell);
         }
@@ -63,7 +66,7 @@ class Game {
       let rows = this.grid.length;
       let posX = Math.floor(Math.random() * (cols - 1));
       let posY = Math.floor(Math.random() * (rows - 1));
-      if (this.grid[posY][posX] == '') {
+      if (this.grid[posY][posX] === '') {
         isBlank = true;
         let positionArray = [];
         positionArray.push(posY, posX);
