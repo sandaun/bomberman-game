@@ -1,14 +1,13 @@
 class Game {
   constructor(options) {
     this.player = new Player(options.columns, options.rows, options.widthCell);
-    this.grid = new Grid(options.columns, options.rows, options.widthCell); // CHANGE TO grid WHEN FINISHED constructing
+    this.grid = new Grid(options.columns, options.rows, options.widthCell);
     this.fixObstacle = undefined; // Not used at the moment, maybe in Grid class
     this.rows = options.rows;
     this.columns = options.columns;
     this.widthCell = options.widthCell;
     this.ctx = options.ctx;
     this.intervalGame = undefined;
-    //this.randomGridPos = this.randomGridLoop();
     // this.enemy = options.enemy;
     // this.randomObstacle = undefined;
     // this.updatePointsCB = undefined;
@@ -21,66 +20,36 @@ class Game {
     this.ctx.fillRect(0,0, this.columns * this.widthCell, this.rows * this.widthCell);
   }
 
-  drawBricks () {
+  drawBoardElements () {
     for (let i = 0; i < this.grid.gameGrid.length; i++) {
       for (let j = 0; j < this.grid.gameGrid[i].length; j++) {
         if (this.grid.gameGrid[i][j] === this.grid.gridElements.brick) {
-        this.ctx.fillStyle = 'gray';
-        this.ctx.fillRect(j * this.widthCell, i * this.widthCell, this.widthCell, this.widthCell);
+          this.ctx.fillStyle = 'gray';
+          this.ctx.fillRect(j * this.widthCell, i * this.widthCell, this.widthCell, this.widthCell);
+        }
+        if (this.grid.gameGrid[i][j] === this.grid.gridElements.key) {
+          this.ctx.fillStyle = 'blue';
+          this.ctx.fillRect(j * this.widthCell, i * this.widthCell, this.widthCell, this.widthCell);
+        }
+        if (this.grid.gameGrid[i][j] === this.grid.gridElements.breakableBrick) {
+          this.ctx.fillStyle = 'darkgrey';
+          this.ctx.fillRect(j * this.widthCell, i * this.widthCell, this.widthCell, this.widthCell);
         }
       }
     }
   }
 
-  drawKey () {
-    for (let i = 0; i < this.grid.gameGrid.length; i++) {
-      for (let j = 0; j < this.grid.gameGrid[i].length; j++) {
-        if (this.grid.gameGrid[i][j] === this.grid.gridElements.key)
-        this.ctx.fillStyle = 'blue';
-        this.ctx.fillRect(this.grid.randomGridPos[1] * this.widthCell, this.grid.randomGridPos[0] * this.widthCell, this.widthCell, this.widthCell);
-      }
-    }
-
-    // if (this.randomGridPos != null && this.randomGridPos.length > 0) {
-    //   this.grid[this.randomGridPos[0]][this.randomGridPos[1]] = 'K';
-    //   this.ctx.fillStyle = 'blue';
-    //   this.ctx.fillRect(this.randomGridPos[1] * this.widthCell, this.randomGridPos[0] * this.widthCell, this.widthCell, this.widthCell);
-    // } else {
-    //   console.log('KEY NOT PRINTED');
-    // }
-  }
-  
-
-  // randomGridLoop() {
-  //   let isBlank = false;
-  //   while(!isBlank){
-  //     let cols = this.grid[0].length;
-  //     let rows = this.grid.length;
-  //     let posX = Math.floor(Math.random() * (cols - 1));
-  //     let posY = Math.floor(Math.random() * (rows - 1));
-  //     if (this.grid[posY][posX] === '') {
-  //       isBlank = true;
-  //       let positionArray = [];
-  //       positionArray.push(posY, posX);
-  //       return positionArray;
+  // drawKey () {
+  //   for (let i = 0; i < this.grid.gameGrid.length; i++) {
+  //     for (let j = 0; j < this.grid.gameGrid[i].length; j++) {
+  //       if (this.grid.gameGrid[i][j] === this.grid.gridElements.key) {
+  //         this.ctx.fillStyle = 'blue';
+  //         this.ctx.fillRect(j * this.widthCell, i * this.widthCell, this.widthCell, this.widthCell);
+  //       }
   //     }
   //   }
   // }
 
-  // THIS RECURSIVE RANDOM FUNCTION DIDN'T WORKED. TRIED THE ABOVE WITH WHILE AND WORKED FINE. WHY??
-
-  // randomGripRecursive(posX, posY) {
-  //   if (this.grid[posX][posY] !== '') {
-  //     posX = Math.floor(Math.random() * (this.rows-1));
-  //     posY = Math.floor(Math.random() * (this.columns-1));
-  //     this.randomGripRecursive(posX, posY);
-  //   } else {
-  //     let posArray = [];
-  //     posArray.push(posX, posY);
-  //     console.log('random grid position finished '+ posArray);
-  //     return posArray;
-  //   }
-  // }
 
   // ----------------- CHECK COLLISIONS ------------------
   checkCollision( x, y ) {
@@ -89,14 +58,18 @@ class Game {
         x2 = Math.floor(x + 1 - 1 / this.widthCell), 
         y2 = Math.floor(y + 1 - 1 / this.widthCell);
 
-    if (this.grid.gameGrid[y1][x1] === 'K' || this.grid.gameGrid[y2][x1] === 'K' || this.grid.gameGrid[y1][x2] === 'K' || this.grid.gameGrid[y2][x2] === 'K') {
+    if (this.checkTileContent(y1, x1, y2, x2, this.grid.gridElements.key)) {
       console.log('You win');
       this.onGameOver(); // POSAR EN FUNCIÓ A ASSIGNCONTROLS AMB SWITCH-CASE I UN ELSE DESPRÉS DE DETECTAR COLISIÓ
-      return true;  
-    } else if (this.grid.gameGrid[y1][x1] !== '' || this.grid.gameGrid[y2][x1] !== '' || this.grid.gameGrid[y1][x2] !== '' || this.grid.gameGrid[y2][x2] !== '') {
+      //return true;  
+    } else if (this.checkTileContent(y1, x1, y2, x2, this.grid.gridElements.empty)) {
       return true; // Collision
     }
     return false;
+  }
+
+  checkTileContent(y1, x1, y2, x2, content) {
+    return this.grid.gameGrid[y1][x1] === 'K' || this.grid.gameGrid[y2][x1] === 'K' || this.grid.gameGrid[y1][x2] === 'K' || this.grid.gameGrid[y2][x2] === 'K';
   }
 
   // --------------- PLAYER FUNCTIONS ------------------
@@ -149,9 +122,9 @@ class Game {
   update() {
     this.clear();
     this.drawBoard();
-    this.drawBricks();
+    this.drawBoardElements();
     this.drawPlayer();
-    this.drawKey();
+   // this.drawKey();
     this.intervalGame = window.requestAnimationFrame(this.update.bind(this));
   }
 

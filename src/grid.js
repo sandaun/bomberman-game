@@ -13,6 +13,7 @@ class Grid {
       bomb: 'BM',
       flame: 'F'
     };
+    this.quantityBreakable = 50;
     // this.grid = [
     //   ['B','B','B','B','B','B','B','B','B','B','B','B','B','B','B'],
     //   ['B','','','','','','','','','','','','','','B'],
@@ -28,10 +29,11 @@ class Grid {
     //   ['B','','','','','','','','','','','','','','B'],
     //   ['B','B','B','B','B','B','B','B','B','B','B','B','B','B','B'],
     // ];
-    this.gameGrid = this.generateGrid(); // COMMENT THE ABOVE HARDCODED GRID
+    this.gameGrid = this.generateGrid();
     this.buildFixedBricks();
-    this.randomGridPos = this.randomGridLoop();
+    // this.buildPlayer();
     this.buildKey();
+    this.buildbreakableBrick();
   }
 
   generateGrid () {
@@ -68,9 +70,23 @@ class Grid {
     }
   }
 
+  // buildPlayer () { // ABANS D'IMPLEMENTAR TENIR EN COMPTE QUE NO COLISIONI AMB SI MATEIX SINO NO ES MOURÀ
+  //   this.gameGrid[1][1] = this.gridElements.player;
+  // }
+
   buildKey () {
-    if (this.randomGridPos != null && this.randomGridPos.length > 0) {
-      this.gameGrid[this.randomGridPos[0]][this.randomGridPos[1]] = 'K';
+    let randomGridPosition = this.randomGridLoop();
+    if (randomGridPosition != null && randomGridPosition.length > 0) {
+      this.gameGrid[randomGridPosition[0]][randomGridPosition[1]] = this.gridElements.key;
+    }
+  }
+
+  buildbreakableBrick () {
+    for (let i = 0; i < this.quantityBreakable; i++) {
+      let randomGridPosition = this.randomGridLoop();
+      if (randomGridPosition != null && randomGridPosition.length > 0) {
+        this.gameGrid[randomGridPosition[0]][randomGridPosition[1]] = this.gridElements.breakableBrick;
+      }
     }
   }
 
@@ -81,7 +97,7 @@ class Grid {
       let rows = this.gameGrid.length;
       let posX = Math.floor(Math.random() * (cols - 1));
       let posY = Math.floor(Math.random() * (rows - 1));
-      if (this.gameGrid[posY][posX] === this.gridElements.empty) {
+      if (!this.isPositionForbidden(posX, posY) && this.gameGrid[posY][posX] === this.gridElements.empty) {
         isBlank = true;
         let positionArray = [];
         positionArray.push(posY, posX);
@@ -89,5 +105,33 @@ class Grid {
       }
     }
   }
+
+  isPositionForbidden (x, y) {
+    if (x === 1 && y === 1) {
+      return true;
+    }
+    if (x === 2 && y === 1) {
+      return true;
+    }
+    if (x === 1 && y === 2) {
+      return true;
+    }
+    return false;
+  }
+
+    // THIS RECURSIVE RANDOM FUNCTION DIDN'T WORKED. TRIED THE ABOVE WITH WHILE AND WORKED FINE. WHY??
+
+  // randomGripRecursive(posX, posY) {
+  //   if (this.grid[posX][posY] !== '') {
+  //     posX = Math.floor(Math.random() * (this.rows-1));
+  //     posY = Math.floor(Math.random() * (this.columns-1));
+  //     this.randomGripRecursive(posX, posY);
+  //   } else {
+  //     let posArray = [];
+  //     posArray.push(posX, posY);
+  //     console.log('random grid position finished '+ posArray);
+  //     return posArray;
+  //   }
+  // }
    
 }
