@@ -60,16 +60,18 @@ class Game {
 
     if (this.checkTileContent(y1, x1, y2, x2, this.grid.gridElements.key)) {
       console.log('You win');
-      this.onGameOver(); // POSAR EN FUNCIÓ A ASSIGNCONTROLS AMB SWITCH-CASE I UN ELSE DESPRÉS DE DETECTAR COLISIÓ
-      //return true;  
+      this.onGameOver();
     } else if (this.checkTileContent(y1, x1, y2, x2, this.grid.gridElements.empty)) {
-      return true; // Collision
+        return true; // Collision
     }
     return false;
   }
 
   checkTileContent(y1, x1, y2, x2, content) {
-    return this.grid.gameGrid[y1][x1] === 'K' || this.grid.gameGrid[y2][x1] === 'K' || this.grid.gameGrid[y1][x2] === 'K' || this.grid.gameGrid[y2][x2] === 'K';
+    if (content === this.grid.gridElements.empty) {
+      return this.grid.gameGrid[y1][x1] !== content || this.grid.gameGrid[y2][x1] !== content || this.grid.gameGrid[y1][x2] !== content || this.grid.gameGrid[y2][x2] !== content;
+    } 
+    return this.grid.gameGrid[y1][x1] === content || this.grid.gameGrid[y2][x1] === content || this.grid.gameGrid[y1][x2] === content || this.grid.gameGrid[y2][x2] === content;
   }
 
   // --------------- PLAYER FUNCTIONS ------------------

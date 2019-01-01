@@ -13,7 +13,7 @@ class Grid {
       bomb: 'BM',
       flame: 'F'
     };
-    this.quantityBreakable = 50;
+    this.quantityBreakable = 1;
     // this.grid = [
     //   ['B','B','B','B','B','B','B','B','B','B','B','B','B','B','B'],
     //   ['B','','','','','','','','','','','','','','B'],
@@ -105,7 +105,8 @@ class Grid {
       }
     }
   }
-
+  
+// This function avoids getting random positions that wouldn't let Player begin properly at the game.
   isPositionForbidden (x, y) {
     if (x === 1 && y === 1) {
       return true;

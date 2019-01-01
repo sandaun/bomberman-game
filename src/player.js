@@ -15,6 +15,7 @@ class Player {
     switch (this.direction) {
       case 'up':
        // if (this.positionY > 0) {
+         console.log('Im moving');
           this.positionY -= 10;
        // }
         break;
