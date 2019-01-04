@@ -13,7 +13,7 @@ class Grid {
       bomb: 'BM',
       flame: 'F'
     };
-    this.quantityBreakable = 1;
+    this.quantityBreakable = 10;
     // this.grid = [
     //   ['B','B','B','B','B','B','B','B','B','B','B','B','B','B','B'],
     //   ['B','','','','','','','','','','','','','','B'],
@@ -90,6 +90,12 @@ class Grid {
     }
   }
 
+  buildBomb (position) {
+    if (position != null && position.length > 0 && this.gameGrid[position[0]][position[1]] === this.gridElements.empty) {
+      this.gameGrid[position[0]][position[1]] = this.gridElements.bomb;
+    } // Add here timeout for bomb and also destroyElements() method
+  }
+
   randomGridLoop() {
     let isBlank = false;
     while(!isBlank){
@@ -105,7 +111,7 @@ class Grid {
       }
     }
   }
-  
+
 // This function avoids getting random positions that wouldn't let Player begin properly at the game.
   isPositionForbidden (x, y) {
     if (x === 1 && y === 1) {

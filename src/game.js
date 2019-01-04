@@ -16,8 +16,11 @@ class Game {
 
   // --------------- DRAW BOARD FUNCTIONS ----------------
   drawBoard () {
-    this.ctx.fillStyle = "#41ae41";
-    this.ctx.fillRect(0,0, this.columns * this.widthCell, this.rows * this.widthCell);
+    var img = new Image();
+    img.src = '/Users/oriolcarbo/code/ironhack/module-1/bomberman-game/images/grass.png';
+    this.ctx.drawImage(img, 0, 0,this.columns * this.widthCell, this.rows * this.widthCell);
+    //this.ctx.fillStyle = "#41ae41";
+    //this.ctx.fillRect(0,0, this.columns * this.widthCell, this.rows * this.widthCell);
   }
 
   drawBoardElements () {
@@ -35,21 +38,13 @@ class Game {
           this.ctx.fillStyle = 'darkgrey';
           this.ctx.fillRect(j * this.widthCell, i * this.widthCell, this.widthCell, this.widthCell);
         }
+        if (this.grid.gameGrid[i][j] === this.grid.gridElements.bomb) {
+          this.ctx.fillStyle = 'black';
+          this.ctx.fillRect(j * this.widthCell, i * this.widthCell, this.widthCell, this.widthCell);
+        }
       }
     }
   }
-
-  // drawKey () {
-  //   for (let i = 0; i < this.grid.gameGrid.length; i++) {
-  //     for (let j = 0; j < this.grid.gameGrid[i].length; j++) {
-  //       if (this.grid.gameGrid[i][j] === this.grid.gridElements.key) {
-  //         this.ctx.fillStyle = 'blue';
-  //         this.ctx.fillRect(j * this.widthCell, i * this.widthCell, this.widthCell, this.widthCell);
-  //       }
-  //     }
-  //   }
-  // }
-
 
   // ----------------- CHECK COLLISIONS ------------------
   checkCollision( x, y ) {
@@ -57,6 +52,10 @@ class Game {
         y1 = Math.floor(y + 1 / this.widthCell),
         x2 = Math.floor(x + 1 - 1 / this.widthCell), 
         y2 = Math.floor(y + 1 - 1 / this.widthCell);
+        console.log(x1);
+        console.log(x2);
+        console.log(y1);
+        console.log(y2);
 
     if (this.checkTileContent(y1, x1, y2, x2, this.grid.gridElements.key)) {
       console.log('You win');
@@ -107,12 +106,49 @@ class Game {
             this.player.moveDirection();
           }
           break; 
+        case 32: //space
+          console.log('this is space');  
+          let bombGridPosition = this.player.throwBomb();
+          console.log('this is position from space ' + bombGridPosition); // AIXO SERIA THIS.PLAYER.THROWBOMB SI HO POSEM A PLAYER EL METODE.
+          this.grid.buildBomb(bombGridPosition);
+          
+          break; 
         // case 80: // p pause
         //   this.snake.intervalId ? this.snake.stop() : this.snake.start()
         //   break;
       }
     };
   }
+
+  // Pensar com fer-ho des de player el mètode, i que executi a grid. Es a dir, cridar el metode a player i despres a grid perque pinti. throwBomb estaria a player i buildBomb() a grid i ho cridariem des de game amb l'espai.
+
+  // throwBomb () {
+  //   let rightSide = Math.floor((this.player.positionX) / this.widthCell + 1 - 1 / this.widthCell);
+  //   let leftSide = Math.floor((this.player.positionX) / this.widthCell + 1 / this.widthCell);
+  //   let downSide = Math.floor((this.player.positionY) / this.widthCell + 1 - 1 / this.widthCell);
+  //   let upSide = Math.floor((this.player.positionY) / this.widthCell + 1 / this.widthCell);
+
+  //   console.log(rightSide);
+  //   console.log(upSide);
+  //   console.log(downSide);
+
+  //   switch (this.player.direction) {
+  //     case 'up': 
+       
+  //       break;
+  //     case 'down':
+      
+  //       break;
+  //     case 'left':
+       
+  //       break;
+  //     case 'right':
+  //       //executar funcio a grid amb coordenades right side i qualsevol posició de up o down sides (pq son iguals) que pinti la bomba
+
+     
+  //       break; 
+  //   }
+  // }
 
   // ----------------- INITIALIZING GAME AND UPDATING CANVAS ------------------
 
@@ -126,7 +162,6 @@ class Game {
     this.drawBoard();
     this.drawBoardElements();
     this.drawPlayer();
-   // this.drawKey();
     this.intervalGame = window.requestAnimationFrame(this.update.bind(this));
   }
 
