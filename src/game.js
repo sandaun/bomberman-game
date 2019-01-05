@@ -16,11 +16,11 @@ class Game {
 
   // --------------- DRAW BOARD FUNCTIONS ----------------
   drawBoard () {
-    var img = new Image();
-    img.src = '/Users/oriolcarbo/code/ironhack/module-1/bomberman-game/images/grass.png';
-    this.ctx.drawImage(img, 0, 0,this.columns * this.widthCell, this.rows * this.widthCell);
-    //this.ctx.fillStyle = "#41ae41";
-    //this.ctx.fillRect(0,0, this.columns * this.widthCell, this.rows * this.widthCell);
+  //   var img = new Image();
+  //   img.src = '/Users/oriolcarbo/code/ironhack/module-1/bomberman-game/images/grass.png';
+  //   this.ctx.drawImage(img, 0, 0,this.columns * this.widthCell, this.rows * this.widthCell);
+    this.ctx.fillStyle = "#41ae41";
+    this.ctx.fillRect(0,0, this.columns * this.widthCell, this.rows * this.widthCell);
   }
 
   drawBoardElements () {
@@ -107,7 +107,6 @@ class Game {
           }
           break; 
         case 32: //space
-          console.log('this is space');  
           let bombGridPosition = this.player.throwBomb();
           console.log('this is position from space ' + bombGridPosition); // AIXO SERIA THIS.PLAYER.THROWBOMB SI HO POSEM A PLAYER EL METODE.
           this.grid.buildBomb(bombGridPosition);
@@ -120,35 +119,6 @@ class Game {
     };
   }
 
-  // Pensar com fer-ho des de player el mètode, i que executi a grid. Es a dir, cridar el metode a player i despres a grid perque pinti. throwBomb estaria a player i buildBomb() a grid i ho cridariem des de game amb l'espai.
-
-  // throwBomb () {
-  //   let rightSide = Math.floor((this.player.positionX) / this.widthCell + 1 - 1 / this.widthCell);
-  //   let leftSide = Math.floor((this.player.positionX) / this.widthCell + 1 / this.widthCell);
-  //   let downSide = Math.floor((this.player.positionY) / this.widthCell + 1 - 1 / this.widthCell);
-  //   let upSide = Math.floor((this.player.positionY) / this.widthCell + 1 / this.widthCell);
-
-  //   console.log(rightSide);
-  //   console.log(upSide);
-  //   console.log(downSide);
-
-  //   switch (this.player.direction) {
-  //     case 'up': 
-       
-  //       break;
-  //     case 'down':
-      
-  //       break;
-  //     case 'left':
-       
-  //       break;
-  //     case 'right':
-  //       //executar funcio a grid amb coordenades right side i qualsevol posició de up o down sides (pq son iguals) que pinti la bomba
-
-     
-  //       break; 
-  //   }
-  // }
 
   // ----------------- INITIALIZING GAME AND UPDATING CANVAS ------------------
 

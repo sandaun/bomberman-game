@@ -93,7 +93,33 @@ class Grid {
   buildBomb (position) {
     if (position != null && position.length > 0 && this.gameGrid[position[0]][position[1]] === this.gridElements.empty) {
       this.gameGrid[position[0]][position[1]] = this.gridElements.bomb;
+      let timeoutId = setTimeout(this.destroyElements.bind(this, position), 2000);
     } // Add here timeout for bomb and also destroyElements() method
+  }
+
+  destroyElements (position) {
+    console.log(position);
+    let bombRange = 1;
+    let posUp = [position[0] - bombRange, position[1]];
+    let posDown = [position[0] + bombRange, position[1]];
+    let posLeft = [position[0], position[1] - bombRange];
+    let posRight = [position[0], position[1] + bombRange];
+
+    if (position != null && position.length > 0 && this.gameGrid[position[0]][position[1]] === this.gridElements.bomb) {
+      this.gameGrid[position[0]][position[1]] = this.gridElements.empty; // Deletes the bomb itself
+    }
+    if (position != null && position.length > 0 && this.gameGrid[posUp[0]][posUp[1]] === this.gridElements.breakableBrick || this.gameGrid[posUp[0]][posUp[1]] === this.gridElements.key) { // DELETE .KEY OPTION. JUST FOR TESTING PURPOSES
+      this.gameGrid[posUp[0]][posUp[1]] = this.gridElements.empty;
+    } 
+    if (position != null && position.length > 0 && this.gameGrid[posDown[0]][posDown[1]] === this.gridElements.breakableBrick) {
+      this.gameGrid[posDown[0]][posDown[1]] = this.gridElements.empty;
+    } 
+    if (position != null && position.length > 0 && this.gameGrid[posLeft[0]][posLeft[1]] === this.gridElements.breakableBrick) {
+      this.gameGrid[posLeft[0]][posLeft[1]] = this.gridElements.empty;
+    } 
+    if (position != null && position.length > 0 && this.gameGrid[posRight[0]][posRight[1]] === this.gridElements.breakableBrick) {
+      this.gameGrid[posRight[0]][posRight[1]] = this.gridElements.empty;
+    } 
   }
 
   randomGridLoop() {
