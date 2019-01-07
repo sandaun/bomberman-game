@@ -9,6 +9,7 @@ class Player {
     this.intervalId = undefined;
     this.maxRows = maxRows;
     this.maxColumns = maxColumns;
+    this.bombRange = 1; // Range cells for the bomb when explotes
   }
 
   moveDirection () {
@@ -40,10 +41,7 @@ class Player {
   // This function calculates player position (column and row) and returns a position array where to throw
   // the bomb depending on the player direction. TO IMPROVE: just make player turn itself first and not move.
   throwBomb () {
-    let playerRightSide = Math.floor((this.positionX) / this.widthCell + 1 - 1 / this.widthCell);
-    let playerLeftSide = Math.floor((this.positionX) / this.widthCell + 1 / this.widthCell);
-    let playerDownSide = Math.floor((this.positionY) / this.widthCell + 1 - 1 / this.widthCell);
-    let playerUpSide = Math.floor((this.positionY) / this.widthCell + 1 / this.widthCell);
+    let { playerRightSide, playerLeftSide, playerUpSide, playerDownSide } = this.playerSideBySide();
     let bombPositionX = 0;
     let bombPositionY = 0;
     let bombGridPosition = [];
@@ -52,37 +50,61 @@ class Player {
       case 'up': 
         bombPositionX = playerLeftSide; // Or rightside
         bombPositionY = playerUpSide - 1;
-        bombGridPosition.push(bombPositionY, bombPositionX);
-        console.log('hey babe its up');
-        console.log(bombGridPosition);
-        return bombGridPosition;  
+        bombGridPosition.push(bombPositionY, bombPositionX);  
         break;
       case 'down':
         bombPositionX = playerLeftSide; // Or rightside
         bombPositionY = playerDownSide + 1;
-        bombGridPosition.push(bombPositionY, bombPositionX);
-        console.log('hey babe its down');
-        console.log(bombGridPosition);
-        return bombGridPosition;      
+        bombGridPosition.push(bombPositionY, bombPositionX);      
         break;
       case 'left':
         bombPositionX = playerLeftSide - 1;
         bombPositionY = playerDownSide; // Or upSide
         bombGridPosition.push(bombPositionY, bombPositionX);
-        console.log('hey babe its left');
-        console.log(bombGridPosition);
-        return bombGridPosition;
         break;
       case 'right':
-        //executar funcio a grid amb coordenades right side i qualsevol posició de up o down sides (pq son iguals) que pinti la bomba
         bombPositionX = playerRightSide + 1;
         bombPositionY = playerDownSide; // Or upSide
         bombGridPosition.push(bombPositionY, bombPositionX);
-        console.log('hey babe its right');
-        console.log(bombGridPosition);
-        return bombGridPosition;
         break; // Still needed?
     }
+    return bombGridPosition;
+  }
+
+  // This function calculates if player is within the range of the bomb explosion in any of the 4 sides. If it is, player is killed (true).
+  bombVsPlayerPosition (bombPosition) {
+    let { playerRightSide, playerLeftSide, playerUpSide, playerDownSide } = this.playerSideBySide();
+
+    let bombUp = [bombPosition[0] - this.bombRange, bombPosition[1]];
+    let bombDown = [bombPosition[0] + this.bombRange, bombPosition[1]];
+    let bombLeft = [bombPosition[0], bombPosition[1] - this.bombRange];
+    let bombRight = [bombPosition[0], bombPosition[1] + this.bombRange];
+
+    // First if condition checks if player is just in one tile (so x1 x2 are equal, y1 y2 are equal).
+    // Second if condition (else if) checks when player can be in two different tiles in X axis (so x1 and x2 are different) or when
+    // player can be in two different tiles in y axis (y1 and y2 are different). Then compares this to the different bomb range positions.
+    if (playerLeftSide === playerRightSide && playerDownSide === playerUpSide) {
+      if ((playerUpSide === bombUp[0] && playerLeftSide === bombUp[1]) || (playerUpSide === bombDown[0] && playerLeftSide === bombDown[1])
+         || (playerUpSide === bombLeft[0] && playerLeftSide === bombLeft[1]) || (playerUpSide === bombRight[0] && playerLeftSide === bombRight[1])) {
+        return true;
+      }
+    } else if ((playerUpSide === bombUp[0] && playerLeftSide === bombUp[1]) || (playerDownSide === bombUp[0] && playerRightSide === bombUp[1])
+    || (playerUpSide === bombDown[0] && playerLeftSide === bombDown[1]) || (playerDownSide === bombDown[0] && playerRightSide === bombDown[1])
+    || (playerUpSide === bombLeft[0] && playerLeftSide === bombLeft[1]) || (playerDownSide === bombLeft[0] && playerRightSide === bombLeft[1])
+    || (playerUpSide === bombRight[0] && playerLeftSide === bombRight[1]) || (playerDownSide === bombRight[0] && playerRightSide === bombRight[1])) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  // This function just defines the 4 player sides (left-right-up-down)
+  playerSideBySide() {
+    let playerLeftSide = Math.floor((this.positionX) / this.widthCell + 1 / this.widthCell); // x1
+    let playerRightSide = Math.floor((this.positionX) / this.widthCell + 1 - 1 / this.widthCell); // x2
+    let playerUpSide = Math.floor((this.positionY) / this.widthCell + 1 / this.widthCell); // y1
+    let playerDownSide = Math.floor((this.positionY) / this.widthCell + 1 - 1 / this.widthCell); // y2
+    return { playerRightSide, playerLeftSide, playerUpSide, playerDownSide };
   }
 
 }

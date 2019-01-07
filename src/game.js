@@ -52,10 +52,6 @@ class Game {
         y1 = Math.floor(y + 1 / this.widthCell),
         x2 = Math.floor(x + 1 - 1 / this.widthCell), 
         y2 = Math.floor(y + 1 - 1 / this.widthCell);
-        console.log(x1);
-        console.log(x2);
-        console.log(y1);
-        console.log(y2);
 
     if (this.checkTileContent(y1, x1, y2, x2, this.grid.gridElements.key)) {
       console.log('You win');
@@ -107,10 +103,7 @@ class Game {
           }
           break; 
         case 32: //space
-          let bombGridPosition = this.player.throwBomb();
-          console.log('this is position from space ' + bombGridPosition); // AIXO SERIA THIS.PLAYER.THROWBOMB SI HO POSEM A PLAYER EL METODE.
-          this.grid.buildBomb(bombGridPosition);
-          
+          this.throwTheBomb();
           break; 
         // case 80: // p pause
         //   this.snake.intervalId ? this.snake.stop() : this.snake.start()
@@ -119,6 +112,19 @@ class Game {
     };
   }
 
+  throwTheBomb() {
+    let bombGridPosition = this.player.throwBomb();
+    let buildBomb = this.grid.buildBomb(bombGridPosition);
+    if (buildBomb === true) {
+      let timeoutId = setTimeout(function () {
+        this.grid.destroyElements(bombGridPosition, this.player.bombRange);
+        if (this.player.bombVsPlayerPosition(bombGridPosition)) {
+          //this.onGameOver();
+          console.log('You are DEAD');
+        }
+      }.bind(this), 3000);
+    }
+  }
 
   // ----------------- INITIALIZING GAME AND UPDATING CANVAS ------------------
 

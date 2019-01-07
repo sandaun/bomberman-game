@@ -13,7 +13,7 @@ class Grid {
       bomb: 'BM',
       flame: 'F'
     };
-    this.quantityBreakable = 10;
+    this.quantityBreakable = 20;
     // this.grid = [
     //   ['B','B','B','B','B','B','B','B','B','B','B','B','B','B','B'],
     //   ['B','','','','','','','','','','','','','','B'],
@@ -33,7 +33,7 @@ class Grid {
     this.buildFixedBricks();
     // this.buildPlayer();
     this.buildKey();
-    this.buildbreakableBrick();
+    this.buildBreakableBrick();
   }
 
   generateGrid () {
@@ -81,7 +81,7 @@ class Grid {
     }
   }
 
-  buildbreakableBrick () {
+  buildBreakableBrick () {
     for (let i = 0; i < this.quantityBreakable; i++) {
       let randomGridPosition = this.randomGridLoop();
       if (randomGridPosition != null && randomGridPosition.length > 0) {
@@ -93,32 +93,33 @@ class Grid {
   buildBomb (position) {
     if (position != null && position.length > 0 && this.gameGrid[position[0]][position[1]] === this.gridElements.empty) {
       this.gameGrid[position[0]][position[1]] = this.gridElements.bomb;
-      let timeoutId = setTimeout(this.destroyElements.bind(this, position), 2000);
-    } // Add here timeout for bomb and also destroyElements() method
+     // let timeoutId = setTimeout(this.destroyElements.bind(this, position, playerPositionX, playerPositionY), 2000); // Could use a variable to control bomb time????
+      return true;
+    }
   }
 
-  destroyElements (position) {
-    console.log(position);
-    let bombRange = 1;
-    let posUp = [position[0] - bombRange, position[1]];
-    let posDown = [position[0] + bombRange, position[1]];
-    let posLeft = [position[0], position[1] - bombRange];
-    let posRight = [position[0], position[1] + bombRange];
+  destroyElements (bombPosition, bombRange) {
+    //let bombRange = 1;
+    // Defining the position of the bomb in the grid and adding or removing the range that will affect the nearby cells.
+    let bombUp = [bombPosition[0] - bombRange, bombPosition[1]];
+    let bombDown = [bombPosition[0] + bombRange, bombPosition[1]];
+    let bombLeft = [bombPosition[0], bombPosition[1] - bombRange];
+    let bombRight = [bombPosition[0], bombPosition[1] + bombRange];
 
-    if (position != null && position.length > 0 && this.gameGrid[position[0]][position[1]] === this.gridElements.bomb) {
-      this.gameGrid[position[0]][position[1]] = this.gridElements.empty; // Deletes the bomb itself
+    if (bombPosition != null && bombPosition.length > 0 && this.gameGrid[bombPosition[0]][bombPosition[1]] === this.gridElements.bomb) {
+      this.gameGrid[bombPosition[0]][bombPosition[1]] = this.gridElements.empty; // Deletes the bomb itself
     }
-    if (position != null && position.length > 0 && this.gameGrid[posUp[0]][posUp[1]] === this.gridElements.breakableBrick || this.gameGrid[posUp[0]][posUp[1]] === this.gridElements.key) { // DELETE .KEY OPTION. JUST FOR TESTING PURPOSES
-      this.gameGrid[posUp[0]][posUp[1]] = this.gridElements.empty;
+    if (bombPosition != null && bombPosition.length > 0 && this.gameGrid[bombUp[0]][bombUp[1]] === this.gridElements.breakableBrick || this.gameGrid[bombUp[0]][bombUp[1]] === this.gridElements.key) { // ADDED .KEY OPTION FOR TESTING PURPOSES
+      this.gameGrid[bombUp[0]][bombUp[1]] = this.gridElements.empty;
     } 
-    if (position != null && position.length > 0 && this.gameGrid[posDown[0]][posDown[1]] === this.gridElements.breakableBrick) {
-      this.gameGrid[posDown[0]][posDown[1]] = this.gridElements.empty;
+    if (bombPosition != null && bombPosition.length > 0 && this.gameGrid[bombDown[0]][bombDown[1]] === this.gridElements.breakableBrick) {
+      this.gameGrid[bombDown[0]][bombDown[1]] = this.gridElements.empty; // ADD .KEY!!!
     } 
-    if (position != null && position.length > 0 && this.gameGrid[posLeft[0]][posLeft[1]] === this.gridElements.breakableBrick) {
-      this.gameGrid[posLeft[0]][posLeft[1]] = this.gridElements.empty;
+    if (bombPosition != null && bombPosition.length > 0 && this.gameGrid[bombLeft[0]][bombLeft[1]] === this.gridElements.breakableBrick) {
+      this.gameGrid[bombLeft[0]][bombLeft[1]] = this.gridElements.empty; // ADD .KEY!!!
     } 
-    if (position != null && position.length > 0 && this.gameGrid[posRight[0]][posRight[1]] === this.gridElements.breakableBrick) {
-      this.gameGrid[posRight[0]][posRight[1]] = this.gridElements.empty;
+    if (bombPosition != null && bombPosition.length > 0 && this.gameGrid[bombRight[0]][bombRight[1]] === this.gridElements.breakableBrick) {
+      this.gameGrid[bombRight[0]][bombRight[1]] = this.gridElements.empty; // ADD .KEY!!!
     } 
   }
 
