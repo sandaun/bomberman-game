@@ -1,8 +1,8 @@
 class Player {
   constructor(maxColumns, maxRows, widthCell) {
-    this.positionX = 50; // Player position initial
-    this.positionY = 50; // Player position initial
     this.widthCell = widthCell; // Cell size if needed
+    this.positionX = widthCell; // Player position initial. As a cell its 50x50 I can use widthCell to mark the position
+    this.positionY = widthCell; // Player position initial. As a cell its 50x50 I can use widthCell to mark the position
     this.height = 50; 
     this.width = 50;
     this.direction = 'up';
@@ -66,7 +66,7 @@ class Player {
         bombPositionX = playerRightSide + 1;
         bombPositionY = playerDownSide; // Or upSide
         bombGridPosition.push(bombPositionY, bombPositionX);
-        break; // Still needed?
+        break;
     }
     return bombGridPosition;
   }

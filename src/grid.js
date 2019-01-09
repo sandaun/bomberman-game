@@ -5,11 +5,11 @@ class Grid {
     this.widthCell = widthCell;
     this.gridElements = {
       empty: '',
-      player: 'P',
+    //  player: 'P', Player will not be built in grid
       brick: 'B',
       key: 'K',
       breakableBrick: 'BB',
-      enemy: 'E',
+     // enemy: 'E', Enemy will not be built in grid as it will be considered like to work like player
       bomb: 'BM',
       flame: 'F'
     };

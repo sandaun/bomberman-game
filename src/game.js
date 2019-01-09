@@ -2,6 +2,7 @@ class Game {
   constructor(options) {
     this.player = new Player(options.columns, options.rows, options.widthCell);
     this.grid = new Grid(options.columns, options.rows, options.widthCell);
+    this.enemy = new Enemy(options.columns, options.rows, options.widthCell);
     this.fixObstacle = undefined; // Not used at the moment, maybe in Grid class
     this.rows = options.rows;
     this.columns = options.columns;
@@ -71,7 +72,7 @@ class Game {
 
   // --------------- PLAYER FUNCTIONS ------------------
   drawPlayer () {
-    this.ctx.fillStyle = 'red';
+    this.ctx.fillStyle = '#FFFF33';
     this.ctx.fillRect(this.player.positionX, this.player.positionY, this.player.height, this.player.width);
   }
   
@@ -106,7 +107,7 @@ class Game {
           this.throwTheBomb();
           break; 
         // case 80: // p pause
-        //   this.snake.intervalId ? this.snake.stop() : this.snake.start()
+        //   this.enemy.intervalId ? this.enemy.stop() : this.enemy.start(this.grid)
         //   break;
       }
     };
@@ -126,23 +127,41 @@ class Game {
     }
   }
 
+  // ----------------- ENEMY FUNCTIONS ------------------
+  drawEnemy () {
+    this.ctx.fillStyle = '#FF3333';
+    this.ctx.fillRect(this.enemy.positionX, this.enemy.positionY, this.enemy.height, this.enemy.width);
+  }
+
+
   // ----------------- INITIALIZING GAME AND UPDATING CANVAS ------------------
 
   start() {
     this.assignControlsToKeys();
+    //this.enemy.move(this.grid);
     this.update();
+    this.intervalGame = window.requestAnimationFrame(this.update.bind(this));
   }
 
   update() {
     this.clear();
     this.drawBoard();
     this.drawBoardElements();
+    this.drawEnemy();
     this.drawPlayer();
+    // this.enemy.moveDirection(this.grid);
     this.intervalGame = window.requestAnimationFrame(this.update.bind(this));
   }
 
   clear() {
     this.ctx.clearRect(0, 0, this.columns * this.widthCell, this.rows * this.widthCell);
+  }
+
+  pause () {
+    if (this.intervalGame) {
+      window.cancelAnimationFrame(this.intervalGame);
+      this.intervalGame = undefined;
+    }
   }
 
 }
