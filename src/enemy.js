@@ -135,8 +135,8 @@ class Enemy {
   // }
 
   // This function calculates if player is within the range of the bomb explosion in any of the 4 sides. If it is, player is killed (true).
-  bombVsPlayerPosition (bombPosition) {
-    let { playerRightSide, playerLeftSide, playerUpSide, playerDownSide } = this.playerSideBySide();
+  bombVsEnemyPosition (bombPosition) {
+    let { enemyRightSide, enemyLeftSide, enemyUpSide, enemyDownSide } = this.enemySideBySide();
 
     let bombUp = [bombPosition[0] - this.bombRange, bombPosition[1]];
     let bombDown = [bombPosition[0] + this.bombRange, bombPosition[1]];
@@ -146,15 +146,15 @@ class Enemy {
     // First if condition checks if player is just in one tile (so x1 x2 are equal, y1 y2 are equal).
     // Second if condition (else if) checks when player can be in two different tiles in X axis (so x1 and x2 are different) or when
     // player can be in two different tiles in y axis (y1 and y2 are different). Then compares this to the different bomb range positions.
-    if (playerLeftSide === playerRightSide && playerDownSide === playerUpSide) {
-      if ((playerUpSide === bombUp[0] && playerLeftSide === bombUp[1]) || (playerUpSide === bombDown[0] && playerLeftSide === bombDown[1])
-         || (playerUpSide === bombLeft[0] && playerLeftSide === bombLeft[1]) || (playerUpSide === bombRight[0] && playerLeftSide === bombRight[1])) {
+    if (enemyLeftSide === enemyRightSide && enemyDownSide === enemyUpSide) {
+      if ((enemyUpSide === bombUp[0] && enemyLeftSide === bombUp[1]) || (enemyUpSide === bombDown[0] && enemyLeftSide === bombDown[1])
+         || (enemyUpSide === bombLeft[0] && enemyLeftSide === bombLeft[1]) || (enemyUpSide === bombRight[0] && enemyLeftSide === bombRight[1])) {
         return true;
       }
-    } else if ((playerUpSide === bombUp[0] && playerLeftSide === bombUp[1]) || (playerDownSide === bombUp[0] && playerRightSide === bombUp[1])
-    || (playerUpSide === bombDown[0] && playerLeftSide === bombDown[1]) || (playerDownSide === bombDown[0] && playerRightSide === bombDown[1])
-    || (playerUpSide === bombLeft[0] && playerLeftSide === bombLeft[1]) || (playerDownSide === bombLeft[0] && playerRightSide === bombLeft[1])
-    || (playerUpSide === bombRight[0] && playerLeftSide === bombRight[1]) || (playerDownSide === bombRight[0] && playerRightSide === bombRight[1])) {
+    } else if ((enemyUpSide === bombUp[0] && enemyLeftSide === bombUp[1]) || (enemyDownSide === bombUp[0] && enemyRightSide === bombUp[1])
+    || (enemyUpSide === bombDown[0] && enemyLeftSide === bombDown[1]) || (enemyDownSide === bombDown[0] && enemyRightSide === bombDown[1])
+    || (enemyUpSide === bombLeft[0] && enemyLeftSide === bombLeft[1]) || (enemyDownSide === bombLeft[0] && enemyRightSide === bombLeft[1])
+    || (enemyUpSide === bombRight[0] && enemyLeftSide === bombRight[1]) || (enemyDownSide === bombRight[0] && enemyRightSide === bombRight[1])) {
       return true;
     } else {
       return false;
@@ -162,12 +162,12 @@ class Enemy {
   }
 
   // This function just defines the 4 player sides (left-right-up-down)
-  playerSideBySide() {
-    let playerLeftSide = Math.floor((this.positionX) / this.widthCell + 1 / this.widthCell); // x1
-    let playerRightSide = Math.floor((this.positionX) / this.widthCell + 1 - 1 / this.widthCell); // x2
-    let playerUpSide = Math.floor((this.positionY) / this.widthCell + 1 / this.widthCell); // y1
-    let playerDownSide = Math.floor((this.positionY) / this.widthCell + 1 - 1 / this.widthCell); // y2
-    return { playerRightSide, playerLeftSide, playerUpSide, playerDownSide };
+  enemySideBySide() {
+    let enemyLeftSide = Math.floor((this.positionX) / this.widthCell + 1 / this.widthCell); // x1
+    let enemyRightSide = Math.floor((this.positionX) / this.widthCell + 1 - 1 / this.widthCell); // x2
+    let enemyUpSide = Math.floor((this.positionY) / this.widthCell + 1 / this.widthCell); // y1
+    let enemyDownSide = Math.floor((this.positionY) / this.widthCell + 1 - 1 / this.widthCell); // y2
+    return { enemyRightSide, enemyLeftSide, enemyUpSide, enemyDownSide };
   }
 
 }

@@ -9,8 +9,6 @@ class Game {
     this.widthCell = options.widthCell;
     this.ctx = options.ctx;
     this.intervalGame = undefined;
-    // this.enemy = options.enemy;
-    // this.randomObstacle = undefined;
     // this.updatePointsCB = undefined;
     // this.points = 0;
   }
@@ -25,23 +23,33 @@ class Game {
   }
 
   drawBoardElements () {
+    let brick = new Image();
+    brick.src = '/Users/oriolcarbo/code/ironhack/module-1/bomberman-game/images/brick.png';
+    let brickbreak = new Image();
+    brickbreak.src = '/Users/oriolcarbo/code/ironhack/module-1/bomberman-game/images/brickbreak.png';
+    let bomb = new Image();
+    bomb.src = '/Users/oriolcarbo/code/ironhack/module-1/bomberman-game/images/bombV2.png';
+
     for (let i = 0; i < this.grid.gameGrid.length; i++) {
       for (let j = 0; j < this.grid.gameGrid[i].length; j++) {
         if (this.grid.gameGrid[i][j] === this.grid.gridElements.brick) {
-          this.ctx.fillStyle = 'gray';
-          this.ctx.fillRect(j * this.widthCell, i * this.widthCell, this.widthCell, this.widthCell);
+          //this.ctx.fillStyle = 'gray';
+          //this.ctx.fillRect(j * this.widthCell, i * this.widthCell, this.widthCell, this.widthCell);
+          this.ctx.drawImage(brick, j * this.widthCell, i * this.widthCell, this.widthCell, this.widthCell);
         }
         if (this.grid.gameGrid[i][j] === this.grid.gridElements.key) {
           this.ctx.fillStyle = 'blue';
           this.ctx.fillRect(j * this.widthCell, i * this.widthCell, this.widthCell, this.widthCell);
         }
         if (this.grid.gameGrid[i][j] === this.grid.gridElements.breakableBrick) {
-          this.ctx.fillStyle = 'darkgrey';
-          this.ctx.fillRect(j * this.widthCell, i * this.widthCell, this.widthCell, this.widthCell);
+          //this.ctx.fillStyle = 'darkgrey';
+          //this.ctx.fillRect(j * this.widthCell, i * this.widthCell, this.widthCell, this.widthCell);
+          this.ctx.drawImage(brickbreak, j * this.widthCell, i * this.widthCell, this.widthCell, this.widthCell);
         }
         if (this.grid.gameGrid[i][j] === this.grid.gridElements.bomb) {
-          this.ctx.fillStyle = 'black';
-          this.ctx.fillRect(j * this.widthCell, i * this.widthCell, this.widthCell, this.widthCell);
+          // this.ctx.fillStyle = 'black';
+          // this.ctx.fillRect(j * this.widthCell, i * this.widthCell, this.widthCell, this.widthCell);
+          this.ctx.drawImage(bomb, j * this.widthCell, i * this.widthCell, this.widthCell, this.widthCell);
         }
       }
     }
@@ -72,8 +80,30 @@ class Game {
 
   // --------------- PLAYER FUNCTIONS ------------------
   drawPlayer () {
-    this.ctx.fillStyle = '#FFFF33';
-    this.ctx.fillRect(this.player.positionX, this.player.positionY, this.player.height, this.player.width);
+    // this.ctx.fillStyle = '#FFFF33';
+    // this.ctx.fillRect(this.player.positionX, this.player.positionY, this.player.height, this.player.width);
+    if (this.player.direction === 'up') {
+      let bomb = new Image();
+      bomb.src = '/Users/oriolcarbo/code/ironhack/module-1/bomberman-game/images/playerUp.png';
+      this.ctx.drawImage(bomb, this.player.positionX, this.player.positionY, this.player.height, this.player.width);
+    }
+    if (this.player.direction === 'down') {
+      let bomb = new Image();
+      bomb.src = '/Users/oriolcarbo/code/ironhack/module-1/bomberman-game/images/playerDown.png';
+      this.ctx.drawImage(bomb, this.player.positionX, this.player.positionY, this.player.height, this.player.width);
+    }
+    if (this.player.direction === 'left') {
+      let bomb = new Image();
+      bomb.src = '/Users/oriolcarbo/code/ironhack/module-1/bomberman-game/images/playerLeft.png';
+      this.ctx.drawImage(bomb, this.player.positionX, this.player.positionY, this.player.height, this.player.width);
+    }
+    if (this.player.direction === 'right') {
+      let bomb = new Image();
+      bomb.src = '/Users/oriolcarbo/code/ironhack/module-1/bomberman-game/images/playerRight.png';
+      this.ctx.drawImage(bomb, this.player.positionX, this.player.positionY, this.player.height, this.player.width);
+    }
+    // this.player.updateFrame(this.ctx);
+    // this.ctx.drawImage(this.player.character, this.player.srcX, this.player.srcY, this.player.widthFrame, this.player.heightFrame, this.player.x, this.player.y, this.player.widthFrame, this.player.heightFrame);
   }
   
   assignControlsToKeys () {
@@ -123,14 +153,21 @@ class Game {
           //this.onGameOver();
           console.log('You are DEAD');
         }
+        if (this.enemy.bombVsEnemyPosition(bombGridPosition)) {
+          console.log('Enemy hit');
+        }
       }.bind(this), 3000);
     }
   }
 
   // ----------------- ENEMY FUNCTIONS ------------------
   drawEnemy () {
-    this.ctx.fillStyle = '#FF3333';
-    this.ctx.fillRect(this.enemy.positionX, this.enemy.positionY, this.enemy.height, this.enemy.width);
+    // this.ctx.fillStyle = '#FF3333';
+    // this.ctx.fillRect(this.enemy.positionX, this.enemy.positionY, this.enemy.height, this.enemy.width);
+    let enemy = new Image();
+    enemy.src = '/Users/oriolcarbo/code/ironhack/module-1/bomberman-game/images/enemy.png';
+    this.ctx.drawImage(enemy, this.enemy.positionX, this.enemy.positionY, this.enemy.height, this.enemy.width);
+
   }
 
 
@@ -138,7 +175,7 @@ class Game {
 
   start() {
     this.assignControlsToKeys();
-    //this.enemy.move(this.grid);
+    this.enemy.move(this.grid);
     this.update();
     this.intervalGame = window.requestAnimationFrame(this.update.bind(this));
   }
@@ -149,7 +186,7 @@ class Game {
     this.drawBoardElements();
     this.drawEnemy();
     this.drawPlayer();
-    // this.enemy.moveDirection(this.grid);
+    //this.enemy.moveDirection(this.grid);
     this.intervalGame = window.requestAnimationFrame(this.update.bind(this));
   }
 

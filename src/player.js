@@ -10,7 +10,30 @@ class Player {
     this.maxRows = maxRows;
     this.maxColumns = maxColumns;
     this.bombRange = 1; // Range cells for the bomb when explotes
+
+    // this.character = new Image();
+    // this.character.src = '/Users/oriolcarbo/code/ironhack/module-1/bomberman-game/images/character.png';
+    // this.spriteWidth = 294;
+    // this.spriteHeight = 80;
+    // this.rows = 2;
+    // this.cols = 6;
+    // this.trackRight = 0;
+    // this.trackLeft = 1;
+    // this.widthFrame = this.spriteWidth/this.cols;
+    // this.heightFrame = this.spriteHeight/this.rows;
+    // this.currentFrame = 0;
+    // this.frameCount = 6;
+    // this.x = 0;
+    // this.y = 0;
+    // this.srcX = 0;
+    // this.srcY = 0;
   }
+
+  // updateFrame (ctx) {
+  //   ctx.clearRect(this.x, this.y, this.widthFrame, this.heightFrame);
+  //   this.currentFrame = ++this.currentFrame % this.frameCount;
+  //   this.srcX = this.currentFrame * this.widthFrame;
+  // }
 
   moveDirection () {
     switch (this.direction) {

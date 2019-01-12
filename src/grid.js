@@ -13,7 +13,7 @@ class Grid {
       bomb: 'BM',
       flame: 'F'
     };
-    this.quantityBreakable = 20;
+    this.quantityBreakable = 10;
     // this.grid = [
     //   ['B','B','B','B','B','B','B','B','B','B','B','B','B','B','B'],
     //   ['B','','','','','','','','','','','','','','B'],
