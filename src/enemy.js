@@ -85,8 +85,7 @@ class Enemy {
         y2 = Math.floor(y + 1 - 1 / this.widthCell);
 
     if (this.checkTileContent(y1, x1, y2, x2, grid.gridElements.key, grid)) {
-      console.log('You win');
-      //this.onGameOver(); // THIS SHALL BE ERASEEEEEEEEEEEEEEEEED !!!!!!!!!!!!!!!!!!!!!!!!!!
+      return false;
     } else if (this.checkTileContent(y1, x1, y2, x2, grid.gridElements.empty, grid)) {
         return true; // Collision
     }

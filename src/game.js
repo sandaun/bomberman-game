@@ -102,7 +102,7 @@ class Game {
       bomb.src = '/Users/oriolcarbo/code/ironhack/module-1/bomberman-game/images/playerRight.png';
       this.ctx.drawImage(bomb, this.player.positionX, this.player.positionY, this.player.height, this.player.width);
     }
-    // this.player.updateFrame(this.ctx);
+    // this.player.updateFrame(this.ctx); THIS IS FOR THE SPRITE
     // this.ctx.drawImage(this.player.character, this.player.srcX, this.player.srcY, this.player.widthFrame, this.player.heightFrame, this.player.x, this.player.y, this.player.widthFrame, this.player.heightFrame);
   }
   
@@ -170,6 +170,22 @@ class Game {
 
   }
 
+  // COLLISION BETWEEN PLAYER AND ENEMY
+  enemyMeetPlayer () {
+    let playerLeft = this.player.positionX;
+    let playerRight = this.player.positionX + this.widthCell;
+    let playerUp = this.player.positionY;
+    let playerDown = this.player.positionY + this.widthCell;
+    let enemyLeft = this.enemy.positionX;
+    let enemyRight = this.enemy.positionX + this.widthCell;
+    let enemyUp =  this.enemy.positionY;
+    let enemyDown = this.enemy.positionY + this.widthCell;
+
+    if ((playerLeft === enemyRight && (playerUp === enemyUp || playerDown === enemyDown)) || (playerRight === enemyLeft && (playerUp === enemyUp || playerDown === enemyDown)) || (playerUp === enemyDown && (playerLeft === enemyLeft || playerRight === enemyRight)) || (playerDown === enemyUp && (playerLeft === enemyLeft || playerRight === enemyRight))) {
+      this.onGameOver();
+    }
+  }
+
 
   // ----------------- INITIALIZING GAME AND UPDATING CANVAS ------------------
 
@@ -186,6 +202,7 @@ class Game {
     this.drawBoardElements();
     this.drawEnemy();
     this.drawPlayer();
+    this.enemyMeetPlayer(); // USE AN IF AND DO SOMETHING IF FUNCTION RETURN TRUE (GAMEOVER, PAUSE, ETC.)
     //this.enemy.moveDirection(this.grid);
     this.intervalGame = window.requestAnimationFrame(this.update.bind(this));
   }
