@@ -3,6 +3,7 @@ class Grid {
     this.maxRows = maxRows;
     this.maxColumns = maxColumns;
     this.widthCell = widthCell;
+    this.points = 0;
     this.gridElements = {
       empty: '',
     //  player: 'P', Player will not be built in grid
@@ -111,15 +112,19 @@ class Grid {
     }
     if (bombPosition != null && bombPosition.length > 0 && this.gameGrid[bombUp[0]][bombUp[1]] === this.gridElements.breakableBrick || this.gameGrid[bombUp[0]][bombUp[1]] === this.gridElements.key) { // ADDED .KEY OPTION FOR TESTING PURPOSES
       this.gameGrid[bombUp[0]][bombUp[1]] = this.gridElements.empty;
+      this.points++;
     } 
     if (bombPosition != null && bombPosition.length > 0 && this.gameGrid[bombDown[0]][bombDown[1]] === this.gridElements.breakableBrick) {
       this.gameGrid[bombDown[0]][bombDown[1]] = this.gridElements.empty; // ADD .KEY!!!
+      this.points++;
     } 
     if (bombPosition != null && bombPosition.length > 0 && this.gameGrid[bombLeft[0]][bombLeft[1]] === this.gridElements.breakableBrick) {
       this.gameGrid[bombLeft[0]][bombLeft[1]] = this.gridElements.empty; // ADD .KEY!!!
+      this.points++;
     } 
     if (bombPosition != null && bombPosition.length > 0 && this.gameGrid[bombRight[0]][bombRight[1]] === this.gridElements.breakableBrick) {
       this.gameGrid[bombRight[0]][bombRight[1]] = this.gridElements.empty; // ADD .KEY!!!
+      this.points++;
     } 
   }
 
@@ -148,6 +153,9 @@ class Grid {
       return true;
     }
     if (x === 1 && y === 2) {
+      return true;
+    }
+    if (x === 13 && y === 11) { // This is enemy initial position
       return true;
     }
     return false;

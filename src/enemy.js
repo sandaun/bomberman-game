@@ -133,7 +133,7 @@ class Enemy {
   //   return bombGridPosition;
   // }
 
-  // This function calculates if player is within the range of the bomb explosion in any of the 4 sides. If it is, player is killed (true).
+  // This function calculates if enemy is within the range of the bomb explosion in any of the 4 sides. If it is, enemy is killed (true).
   bombVsEnemyPosition (bombPosition) {
     let { enemyRightSide, enemyLeftSide, enemyUpSide, enemyDownSide } = this.enemySideBySide();
 
@@ -142,9 +142,9 @@ class Enemy {
     let bombLeft = [bombPosition[0], bombPosition[1] - this.bombRange];
     let bombRight = [bombPosition[0], bombPosition[1] + this.bombRange];
 
-    // First if condition checks if player is just in one tile (so x1 x2 are equal, y1 y2 are equal).
-    // Second if condition (else if) checks when player can be in two different tiles in X axis (so x1 and x2 are different) or when
-    // player can be in two different tiles in y axis (y1 and y2 are different). Then compares this to the different bomb range positions.
+    // First if condition checks if enemy is just in one tile (so x1 x2 are equal, y1 y2 are equal).
+    // Second if condition (else if) checks when enemy can be in two different tiles in X axis (so x1 and x2 are different) or when
+    // enemy can be in two different tiles in y axis (y1 and y2 are different). Then compares this to the different bomb range positions.
     if (enemyLeftSide === enemyRightSide && enemyDownSide === enemyUpSide) {
       if ((enemyUpSide === bombUp[0] && enemyLeftSide === bombUp[1]) || (enemyUpSide === bombDown[0] && enemyLeftSide === bombDown[1])
          || (enemyUpSide === bombLeft[0] && enemyLeftSide === bombLeft[1]) || (enemyUpSide === bombRight[0] && enemyLeftSide === bombRight[1])) {

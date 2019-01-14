@@ -181,8 +181,8 @@ class Game {
     let enemyUp =  this.enemy.positionY;
     let enemyDown = this.enemy.positionY + this.widthCell;
 
-    if ((playerLeft === enemyRight && (playerUp === enemyUp || playerDown === enemyDown)) || (playerRight === enemyLeft && (playerUp === enemyUp || playerDown === enemyDown)) || (playerUp === enemyDown && (playerLeft === enemyLeft || playerRight === enemyRight)) || (playerDown === enemyUp && (playerLeft === enemyLeft || playerRight === enemyRight))) {
-      this.onGameOver();
+    if (playerRight > enemyLeft && playerLeft < enemyRight && playerDown > enemyUp && playerUp < enemyDown) {
+      return true;
     }
   }
 
@@ -202,7 +202,7 @@ class Game {
     this.drawBoardElements();
     this.drawEnemy();
     this.drawPlayer();
-    this.enemyMeetPlayer(); // USE AN IF AND DO SOMETHING IF FUNCTION RETURN TRUE (GAMEOVER, PAUSE, ETC.)
+    this.enemyMeetPlayer(); // USE AN IF AND DO SOMETHING IF FUNCTION RETURN TRUE (GAMEOVER, PAUSE, ETC.,) one life minus...
     //this.enemy.moveDirection(this.grid);
     this.intervalGame = window.requestAnimationFrame(this.update.bind(this));
   }
