@@ -200,9 +200,11 @@ class Game {
     this.clear();
     this.drawBoard();
     this.drawBoardElements();
+    if (!this.enemyMeetPlayer()){
+      this.drawPlayer();
+    }
     this.drawEnemy();
-    this.drawPlayer();
-    this.enemyMeetPlayer(); // USE AN IF AND DO SOMETHING IF FUNCTION RETURN TRUE (GAMEOVER, PAUSE, ETC.,) one life minus...
+    //this.drawPlayer();
     //this.enemy.moveDirection(this.grid);
     this.intervalGame = window.requestAnimationFrame(this.update.bind(this));
   }

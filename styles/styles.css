@@ -1,3 +1,7 @@
+body {
+  background-color: black;
+}
+
 .container{
   margin: 0 auto;
   width: 85%;
@@ -6,6 +10,9 @@
 .begin {
   flex-direction: column;
   align-items: center;
+  font-family: VT323;
+  color: white;
+  font-size: 40px;
 }
 
 .canvas {
