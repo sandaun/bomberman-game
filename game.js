@@ -24,11 +24,11 @@ class Game {
 
   drawBoardElements () {
     let brick = new Image();
-    brick.src = '/Users/oriolcarbo/code/ironhack/module-1/bomberman-game/images/brick.png';
+    brick.src = 'images/brick.png';
     let brickbreak = new Image();
-    brickbreak.src = '/Users/oriolcarbo/code/ironhack/module-1/bomberman-game/images/brickbreak.png';
+    brickbreak.src = 'images/brickbreak.png';
     let bomb = new Image();
-    bomb.src = '/Users/oriolcarbo/code/ironhack/module-1/bomberman-game/images/bombV2.png';
+    bomb.src = 'images/bombV2.png';
 
     for (let i = 0; i < this.grid.gameGrid.length; i++) {
       for (let j = 0; j < this.grid.gameGrid[i].length; j++) {
@@ -84,22 +84,22 @@ class Game {
     // this.ctx.fillRect(this.player.positionX, this.player.positionY, this.player.height, this.player.width);
     if (this.player.direction === 'up') {
       let bomb = new Image();
-      bomb.src = '/Users/oriolcarbo/code/ironhack/module-1/bomberman-game/images/playerUp.png';
+      bomb.src = 'images/playerUp.png';
       this.ctx.drawImage(bomb, this.player.positionX, this.player.positionY, this.player.height, this.player.width);
     }
     if (this.player.direction === 'down') {
       let bomb = new Image();
-      bomb.src = '/Users/oriolcarbo/code/ironhack/module-1/bomberman-game/images/playerDown.png';
+      bomb.src = 'images/playerDown.png';
       this.ctx.drawImage(bomb, this.player.positionX, this.player.positionY, this.player.height, this.player.width);
     }
     if (this.player.direction === 'left') {
       let bomb = new Image();
-      bomb.src = '/Users/oriolcarbo/code/ironhack/module-1/bomberman-game/images/playerLeft.png';
+      bomb.src = 'images/playerLeft.png';
       this.ctx.drawImage(bomb, this.player.positionX, this.player.positionY, this.player.height, this.player.width);
     }
     if (this.player.direction === 'right') {
       let bomb = new Image();
-      bomb.src = '/Users/oriolcarbo/code/ironhack/module-1/bomberman-game/images/playerRight.png';
+      bomb.src = 'images/playerRight.png';
       this.ctx.drawImage(bomb, this.player.positionX, this.player.positionY, this.player.height, this.player.width);
     }
     // this.player.updateFrame(this.ctx); THIS IS FOR THE SPRITE
@@ -165,7 +165,7 @@ class Game {
     // this.ctx.fillStyle = '#FF3333';
     // this.ctx.fillRect(this.enemy.positionX, this.enemy.positionY, this.enemy.height, this.enemy.width);
     let enemy = new Image();
-    enemy.src = '/Users/oriolcarbo/code/ironhack/module-1/bomberman-game/images/enemy.png';
+    enemy.src = 'images/enemy.png';
     this.ctx.drawImage(enemy, this.enemy.positionX, this.enemy.positionY, this.enemy.height, this.enemy.width);
 
   }
