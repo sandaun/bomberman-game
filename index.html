@@ -5,21 +5,22 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="styles/styles.css">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-
+    <style>@import url('https://fonts.googleapis.com/css?family=Press+Start+2P');</style>
     <title>Bomberman Game</title>
 </head>
-<body>
-    <div class="begin" id="begin" style="display: flex">
-        <h1>Bomberman Game</h1>
-        <button class="button" id="playMe">Play!</button>
-    </div>
-    <div class="canvas">
+<body class="container">
+    <section id="begin" style="display: block">
+        <!-- <h2 class="title_text">Bomberman</h2> -->
+        <div><img src="images/bombermanTitle.png" alt="" width="40%"></div>
+        <button class="startbutton" id="playMe"><span>Start Game!</span></button>
+    </section>
+    <section>
         <canvas id="bomberman" width="750" height="650" style="display: none"></canvas>
-    </div>
-    <div class="gameover" id="gameover" style="display: none">
-        <h1>Game Over</h1>
-        <button class="button" id="playAgain">Play Again!</button>
-    </div>
+    </section>
+    <section class="gameover" id="gameover" style="display: none">
+        <h2 class="gameover-text">Game Over</h2>
+        <button class="playagain-button" id="playAgain"><span>Play Again!</span></button>
+    </section>
     <script type="text/javascript" src="game.js"></script>
     <script type="text/javascript" src="grid.js"></script>
     <script type="text/javascript" src="enemy.js"></script>

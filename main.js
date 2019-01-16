@@ -19,7 +19,7 @@ document.onload = function() {
   // begin.style = 'display: none';
 
   playButton.onclick = function () {
-    canvas.style = 'display: flex';
+    canvas.style = 'display: block';
     begin.style = 'display: none';
   };
 
@@ -28,8 +28,9 @@ document.onload = function() {
   });
 
   game.onGameOver = () => {
-    canvas.style = 'display: none';
-    gameOver.style = 'display: flex';
+    // canvas.style = 'display: none';
+    gameOver.style = 'display: block';
+    gameOver.style = 'position: absolute';
   }
 
   playAgainButton.onclick = function () {

@@ -1,18 +1,117 @@
+/* RESET DE ESTILOS */
+
+/* http://meyerweb.com/eric/tools/css/reset/ 
+   v2.0 | 20110126
+   License: none (public domain)
+*/
+
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+b, u, i, center,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td,
+article, aside, canvas, details, embed, 
+figure, figcaption, footer, header, hgroup, 
+menu, nav, output, ruby, section, summary,
+time, mark, audio, video {
+	margin: 0;
+	padding: 0;
+	border: 0;
+	font-size: 100%;
+}
+
 body {
-  background-color: black;
+	line-height: 1;
+}
+ol, ul {
+	list-style: none;
+}
+blockquote, q {
+	quotes: none;
+}
+blockquote:before, blockquote:after,
+q:before, q:after {
+	content: '';
+	content: none;
 }
 
-.container{
-  margin: 0 auto;
-  width: 85%;
+/*RESET DE ESTILOS*/
+
+/*FONTS*/
+/* @import url('https://fonts.googleapis.com/css?family=Quicksand'); */
+
+
+* {
+  font-family: 'Quicksand', Arial, Helvetica, sans-serif;
+  text-align: center;
 }
 
-.begin {
+span {
+  color: #7800FF;
+}
+
+body {
+  min-width: 100vh;
+  min-height: 100vh;
+}
+
+h1 {
+  font-weight: bolder;
+  font-size: 2.3em;
+  position: fixed;
+  top: 15px;
+  left: 50px;
+
+}
+
+h2 {
+  text-align: center;
+  font-size: 5em;
+}
+
+h3 {
+  text-align: center;
+  font-size: 2em;
+  margin: 0.25em auto 1em;
+}
+
+h4 {
+  text-align: center;
+  font-size: 1.5em;
+  margin: 0.3em auto 1em;
+  color: #7800FF;
+}
+
+p {
+  text-align: center;
+  font-size: 1.5em;
+  position: fixed;
+  top: 70px;
+  left: 80px;
+  font-weight: bold;
+}
+
+.container {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-content: center;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(to right, #2C5364, #203A43, #0F2027); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+  /* padding-top: 15%; */
+}
+/* .begin {
   flex-direction: column;
   align-items: center;
   font-family: VT323;
   color: white;
-  font-size: 40px;
+  font-size: 30px;
 }
 
 .canvas {
@@ -24,18 +123,112 @@ body {
 .gameover {
   flex-direction: column;
   align-items: center;
-}
+} */
 
-.button {
-  background:#3f46ad;
-  border:none;
+.title_text {
+  font-family: 'Press Start 2P';
+  font-size: 3em;
+  color:white;
+}
+.startbutton {
+  background: transparent;
+  border: 2px solid white;
   border-radius:5px;
   width:20%;
   padding: 20px 20px;
   color:white;
   text-transform:uppercase;
-  font-family: sans-serif;
+  font-family: 'Press Start 2P';
   font-style:bold;
   font-size: .9rem;
   font-weight: 700;
+  margin-top: 20px;
+}
+
+/* .startbutton:hover {
+  border-color: rgb(30, 56, 202);
+} */
+
+.startbutton span {
+  font-family: 'Press Start 2P';
+  font-style:bold;
+  color: white;
+  cursor: pointer;
+  display: inline-block;
+  position: relative;
+  transition: 0.5s;
+}
+
+.startbutton span:after {
+  content: '\00bb';
+  position: absolute;
+  opacity: 0;
+  top: 0;
+  right: -20px;
+  transition: 0.5s;
+}
+
+.startbutton:hover span {
+  padding-right: 25px;
+}
+
+.startbutton:hover span:after {
+  opacity: 1;
+  right: 0;
+}
+
+.gameover {
+  background-color: rgba(0, 0, 0, 0.7);
+  width: 100%;
+  height: 220px;
+}
+
+.gameover-text {
+  margin: 40px 0 10px;
+  font-family: 'Press Start 2P';
+  font-size: 2.5em;
+  color:white;
+}
+
+.playagain-button {
+  background: transparent;
+  border: 2px solid white;
+  border-radius:5px;
+  width:20%;
+  padding: 20px 20px;
+  color:white;
+  text-transform:uppercase;
+  font-family: 'Press Start 2P';
+  font-style: bold;
+  font-size: .9rem;
+  font-weight: 700;
+  margin-top: 20px;
+}
+
+.playagain-button span {
+  font-family: 'Press Start 2P';
+  font-style:bold;
+  color: white;
+  cursor: pointer;
+  display: inline-block;
+  position: relative;
+  transition: 0.5s;
+}
+
+.playagain-button span:after {
+  content: '\00bb';
+  position: absolute;
+  opacity: 0;
+  top: 0;
+  right: -20px;
+  transition: 0.5s;
+}
+
+.playagain-button:hover span {
+  padding-right: 25px;
+}
+
+.playagain-button:hover span:after {
+  opacity: 1;
+  right: 0;
 }
