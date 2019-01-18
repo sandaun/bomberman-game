@@ -12,9 +12,9 @@ class Enemy {
     this.bombRange = 1; // Range cells for the bomb when explotes
   }
 
-  // start () {
-  //   this.move();
-  // }
+  start (grid) {
+    this.move(grid);
+  }
 
   move (grid) {
     if (!this.intervalId) {

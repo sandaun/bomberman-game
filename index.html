@@ -6,7 +6,7 @@
     <link rel="stylesheet" href="styles/styles.css">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <style>@import url('https://fonts.googleapis.com/css?family=Press+Start+2P');</style>
-    <title>Bomberman Game</title>
+    <title>Bomberman - by Oriol Carbó</title>
 </head>
 <body class="container">
     <section id="begin" style="display: block">
@@ -14,12 +14,21 @@
         <div><img src="images/bombermanTitle.png" alt="" width="40%"></div>
         <button class="startbutton" id="playMe"><span>Start Game!</span></button>
     </section>
-    <section>
+    <section class="canvas" id="canvas" style="display: none">
         <canvas id="bomberman" width="750" height="650" style="display: none"></canvas>
+        <div>
+            <img src="images/bombermanTitle.png" alt="" width="85%">
+            <h3 id="points-text">Score:</h3>
+            <h3 id="points">0</h3>
+        </div>
     </section>
     <section class="gameover" id="gameover" style="display: none">
         <h2 class="gameover-text">Game Over</h2>
         <button class="playagain-button" id="playAgain"><span>Play Again!</span></button>
+    </section>
+    <section class="gameover" id="youwin" style="display: none">
+        <h2 class="gameover-text">You Win!</h2>
+        <button class="playagain-button" id="playAgainwin"><span>Play Again!</span></button>
     </section>
     <script type="text/javascript" src="game.js"></script>
     <script type="text/javascript" src="grid.js"></script>

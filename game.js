@@ -10,7 +10,7 @@ class Game {
     this.ctx = options.ctx;
     this.intervalGame = undefined;
     // this.updatePointsCB = undefined;
-    // this.points = 0;
+    this.points = 0;
   }
 
   // --------------- DRAW BOARD FUNCTIONS ----------------
@@ -64,7 +64,7 @@ class Game {
 
     if (this.checkTileContent(y1, x1, y2, x2, this.grid.gridElements.key)) {
       console.log('You win');
-      this.onGameOver();
+      this.onWinGame();
     } else if (this.checkTileContent(y1, x1, y2, x2, this.grid.gridElements.empty)) {
         return true; // Collision
     }
@@ -109,6 +109,18 @@ class Game {
   assignControlsToKeys () {
     document.onkeydown = (e) => {
       switch (e.keyCode) {
+        case 87: // W
+          this.player.direction = 'up';
+        break;
+        case 83: // S
+          this.player.direction = 'down';
+        break;
+        case 65: // A
+          this.player.direction = 'left';
+        break;
+        case 68: // D
+          this.player.direction = 'right';
+        break;
         case 38: //arrow up
           this.player.direction = 'up';
           if(!this.checkCollision(this.player.positionX / this.widthCell, (this.player.positionY - 10) / this.widthCell)){
@@ -136,9 +148,10 @@ class Game {
         case 32: //space
           this.throwTheBomb();
           break; 
-        // case 80: // p pause
-        //   this.enemy.intervalId ? this.enemy.stop() : this.enemy.start(this.grid)
-        //   break;
+        case 80: // p pause
+          // this.enemy.intervalId ? this.enemy.stop() : this.enemy.start(this.grid);
+          this.pause();
+          break;
       }
     };
   }
@@ -150,7 +163,7 @@ class Game {
       let timeoutId = setTimeout(function () {
         this.grid.destroyElements(bombGridPosition, this.player.bombRange);
         if (this.player.bombVsPlayerPosition(bombGridPosition)) {
-          //this.onGameOver();
+          // this.onGameOver();
           console.log('You are DEAD');
         }
         if (this.enemy.bombVsEnemyPosition(bombGridPosition)) {
@@ -167,7 +180,6 @@ class Game {
     let enemy = new Image();
     enemy.src = 'images/enemy.png';
     this.ctx.drawImage(enemy, this.enemy.positionX, this.enemy.positionY, this.enemy.height, this.enemy.width);
-
   }
 
   // COLLISION BETWEEN PLAYER AND ENEMY
@@ -186,6 +198,12 @@ class Game {
     }
   }
 
+  // ------------------------ POINTS ------------------------- 
+  addScore () {
+    let bomberScore = document.getElementById('points'); 
+    bomberScore.innerHTML = this.grid.points;
+    return bomberScore;
+  }
 
   // ----------------- INITIALIZING GAME AND UPDATING CANVAS ------------------
 
@@ -196,6 +214,21 @@ class Game {
     this.intervalGame = window.requestAnimationFrame(this.update.bind(this));
   }
 
+  clear() {
+    this.ctx.clearRect(0, 0, this.columns * this.widthCell, this.rows * this.widthCell);
+  }
+
+  pause () {
+    if (this.intervalGame) {
+      this.enemy.stop();
+      window.cancelAnimationFrame(this.intervalGame);
+      this.intervalGame = undefined;
+    } else {
+      this.enemy.start(this.grid);
+      this.intervalGame = window.requestAnimationFrame(this.update.bind(this));
+    }
+  }
+
   update() {
     this.clear();
     this.drawBoard();
@@ -204,19 +237,11 @@ class Game {
       this.drawPlayer();
     }
     this.drawEnemy();
+    this.addScore();
     //this.drawPlayer();
     //this.enemy.moveDirection(this.grid);
-    this.intervalGame = window.requestAnimationFrame(this.update.bind(this));
-  }
-
-  clear() {
-    this.ctx.clearRect(0, 0, this.columns * this.widthCell, this.rows * this.widthCell);
-  }
-
-  pause () {
-    if (this.intervalGame) {
-      window.cancelAnimationFrame(this.intervalGame);
-      this.intervalGame = undefined;
+    if (this.intervalGame !== undefined) {
+      this.intervalGame = window.requestAnimationFrame(this.update.bind(this));
     }
   }
 

@@ -106,6 +106,42 @@ p {
   background: linear-gradient(to right, #2C5364, #203A43, #0F2027); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
   /* padding-top: 15%; */
 }
+
+.canvas {
+  display: flex;
+}
+
+.canvas div {
+  background-color: rgba(8, 8, 8, 0.4);
+  width: 180px;
+} 
+
+.canvas img {
+  margin-top: 5px;
+}
+
+#points-text {
+  text-align: left;
+  margin-top: 50px;
+  margin-left: 10px;
+  list-style-type: none;
+  font-family: 'Press Start 2P';
+  font-style: bold;
+  font-size: 1em;
+  color: white;
+}
+
+#points {
+  text-align: left;
+  margin-top: 10px;
+  margin-left: 10px;
+  list-style-type: none;
+  font-family: 'Press Start 2P';
+  font-style: bold;
+  font-size: 1em;
+  color: white;
+}
+
 /* .begin {
   flex-direction: column;
   align-items: center;

@@ -1,9 +1,8 @@
 document.onload = function() {
   const playButton = document.getElementById('playMe');
-  const begin = document.getElementById('begin');
   const canvas = document.getElementById('bomberman');
   const playAgainButton = document.getElementById('playAgain');
-  const gameOver = document.getElementById('gameover');
+  const playAgainWinButton = document.getElementById('playAgainwin');
   const ctx = canvas.getContext('2d');
   const widthCell = 50;
 
@@ -19,7 +18,10 @@ document.onload = function() {
   // begin.style = 'display: none';
 
   playButton.onclick = function () {
+    const begin = document.getElementById('begin');
+    const canvasSection = document.getElementById('canvas');
     canvas.style = 'display: block';
+    canvasSection.style = 'display: flex';
     begin.style = 'display: none';
   };
 
@@ -28,12 +30,22 @@ document.onload = function() {
   });
 
   game.onGameOver = () => {
-    // canvas.style = 'display: none';
+    const gameOver = document.getElementById('gameover');
     gameOver.style = 'display: block';
     gameOver.style = 'position: absolute';
   }
 
+  game.onWinGame = () => {
+    const youWin = document.getElementById('youwin');
+    youWin.style = 'display: block';
+    youWin.style = 'position: absolute';
+  }
+
   playAgainButton.onclick = function () {
+    location.reload(true);
+  };
+
+  playAgainWinButton.onclick = function () {
     location.reload(true);
   };
 
