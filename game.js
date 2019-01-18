@@ -162,14 +162,31 @@ class Game {
     if (buildBomb === true) {
       let timeoutId = setTimeout(function () {
         this.grid.destroyElements(bombGridPosition, this.player.bombRange);
-        if (this.player.bombVsPlayerPosition(bombGridPosition)) {
-          // this.onGameOver();
-          console.log('You are DEAD');
-        }
-        if (this.enemy.bombVsEnemyPosition(bombGridPosition)) {
-          console.log('Enemy hit');
-        }
+        this.isPlayerHit(bombGridPosition);
+        this.isEnemyHit(bombGridPosition);
       }.bind(this), 3000);
+    }
+  }
+
+  isPlayerHit(bombGridPosition) {
+    if (this.player.bombVsPlayerPosition(bombGridPosition)) {
+      console.log('You are DEAD');
+      let timeoutId = setTimeout(function () { // This timeout is to give the bomb time to destroy the elements before stopping the game.
+        this.pause();
+        this.onGameOver();
+      }.bind(this),500);
+      // this.pause();
+      // this.onGameOver();
+    }
+  }
+
+  isEnemyHit(bombGridPosition) {
+    if (this.enemy.bombVsEnemyPosition(bombGridPosition)) {
+      this.points += 100;
+      this.enemy.stop();
+      this.enemy.enemyHit = true;
+      this.enemy.positionX = 0;
+      this.enemy.positionY = 0;
     }
   }
 
@@ -194,6 +211,7 @@ class Game {
     let enemyDown = this.enemy.positionY + this.widthCell;
 
     if (playerRight > enemyLeft && playerLeft < enemyRight && playerDown > enemyUp && playerUp < enemyDown) {
+      console.log('Enemy reached player');
       return true;
     }
   }
@@ -201,7 +219,8 @@ class Game {
   // ------------------------ POINTS ------------------------- 
   addScore () {
     let bomberScore = document.getElementById('points'); 
-    bomberScore.innerHTML = this.grid.points;
+    let totalPoints = this.points + this.grid.points;
+    bomberScore.innerHTML = totalPoints;
     return bomberScore;
   }
 
@@ -236,7 +255,9 @@ class Game {
     if (!this.enemyMeetPlayer()){
       this.drawPlayer();
     }
-    this.drawEnemy();
+    if (!this.enemy.enemyHit) {
+      this.drawEnemy();
+    }
     this.addScore();
     //this.drawPlayer();
     //this.enemy.moveDirection(this.grid);

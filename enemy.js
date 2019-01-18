@@ -10,6 +10,7 @@ class Enemy {
     this.maxRows = maxRows;
     this.maxColumns = maxColumns;
     this.bombRange = 1; // Range cells for the bomb when explotes
+    this.enemyHit = false;
   }
 
   start (grid) {

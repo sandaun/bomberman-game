@@ -100,7 +100,6 @@ class Grid {
   }
 
   destroyElements (bombPosition, bombRange) {
-    //let bombRange = 1;
     // Defining the position of the bomb in the grid and adding or removing the range that will affect the nearby cells.
     let bombUp = [bombPosition[0] - bombRange, bombPosition[1]];
     let bombDown = [bombPosition[0] + bombRange, bombPosition[1]];
@@ -110,20 +109,20 @@ class Grid {
     if (bombPosition != null && bombPosition.length > 0 && this.gameGrid[bombPosition[0]][bombPosition[1]] === this.gridElements.bomb) {
       this.gameGrid[bombPosition[0]][bombPosition[1]] = this.gridElements.empty; // Deletes the bomb itself
     }
-    if (bombPosition != null && bombPosition.length > 0 && this.gameGrid[bombUp[0]][bombUp[1]] === this.gridElements.breakableBrick || this.gameGrid[bombUp[0]][bombUp[1]] === this.gridElements.key) { // ADDED .KEY OPTION FOR TESTING PURPOSES
+    if (bombPosition != null && bombPosition.length > 0 && this.gameGrid[bombUp[0]][bombUp[1]] === this.gridElements.breakableBrick) { 
       this.gameGrid[bombUp[0]][bombUp[1]] = this.gridElements.empty;
       this.points++;
     } 
     if (bombPosition != null && bombPosition.length > 0 && this.gameGrid[bombDown[0]][bombDown[1]] === this.gridElements.breakableBrick) {
-      this.gameGrid[bombDown[0]][bombDown[1]] = this.gridElements.empty; // ADD .KEY!!!
+      this.gameGrid[bombDown[0]][bombDown[1]] = this.gridElements.empty;
       this.points++;
     } 
     if (bombPosition != null && bombPosition.length > 0 && this.gameGrid[bombLeft[0]][bombLeft[1]] === this.gridElements.breakableBrick) {
-      this.gameGrid[bombLeft[0]][bombLeft[1]] = this.gridElements.empty; // ADD .KEY!!!
+      this.gameGrid[bombLeft[0]][bombLeft[1]] = this.gridElements.empty;
       this.points++;
     } 
     if (bombPosition != null && bombPosition.length > 0 && this.gameGrid[bombRight[0]][bombRight[1]] === this.gridElements.breakableBrick) {
-      this.gameGrid[bombRight[0]][bombRight[1]] = this.gridElements.empty; // ADD .KEY!!!
+      this.gameGrid[bombRight[0]][bombRight[1]] = this.gridElements.empty;
       this.points++;
     } 
   }
