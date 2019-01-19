@@ -23,11 +23,8 @@ document.onload = function() {
     canvas.style = 'display: block';
     canvasSection.style = 'display: flex';
     begin.style = 'display: none';
+    game.start();
   };
-
-  game.start((points) => {
-    console.log(points);
-  });
 
   game.onGameOver = () => {
     const gameOver = document.getElementById('gameover');
