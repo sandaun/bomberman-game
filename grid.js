@@ -86,8 +86,6 @@ class Grid {
   isKeyBehindBrickRandom (positionY, positionX) {
     let quantityForRandom = this.quantityBreakable + 1;
     let randomBriks = Math.floor(Math.random() * quantityForRandom);
-    console.log(this.quantityBreakable);
-    console.log(randomBriks);
     if (randomBriks === 0 && this.isKeyBuilt === false) {
       this.gameGrid[positionY][positionX] = this.gridElements.key;
       this.isKeyBuilt = true;
@@ -131,16 +129,19 @@ class Grid {
       this.gameGrid[bombDown[0]][bombDown[1]] = this.gridElements.empty;
       this.quantityBreakable -=1;
       this.points += 100;
+      this.isKeyBehindBrickRandom(bombDown[0], bombDown[1]);
     } 
     if (bombPosition != null && bombPosition.length > 0 && this.gameGrid[bombLeft[0]][bombLeft[1]] === this.gridElements.breakableBrick) {
       this.gameGrid[bombLeft[0]][bombLeft[1]] = this.gridElements.empty;
       this.quantityBreakable -=1;
       this.points += 100;
+      this.isKeyBehindBrickRandom(bombLeft[0], bombLeft[1]);
     } 
     if (bombPosition != null && bombPosition.length > 0 && this.gameGrid[bombRight[0]][bombRight[1]] === this.gridElements.breakableBrick) {
       this.gameGrid[bombRight[0]][bombRight[1]] = this.gridElements.empty;
       this.quantityBreakable -=1;
       this.points += 100;
+      this.isKeyBehindBrickRandom(bombRight[0], bombRight[1]);
     } 
   }
 

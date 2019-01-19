@@ -64,6 +64,7 @@ class Game {
 
     if (this.checkTileContent(y1, x1, y2, x2, this.grid.gridElements.key)) {
       console.log('You win');
+      this.pause();
       this.onWinGame();
     } else if (this.checkTileContent(y1, x1, y2, x2, this.grid.gridElements.empty)) {
         return true; // Collision
@@ -211,7 +212,6 @@ class Game {
     let enemyDown = this.enemy.positionY + this.widthCell;
 
     if (playerRight > enemyLeft && playerLeft < enemyRight && playerDown > enemyUp && playerUp < enemyDown) {
-      console.log('Enemy reached player');
       return true;
     }
   }
@@ -254,6 +254,9 @@ class Game {
     this.drawBoardElements();
     if (!this.enemyMeetPlayer()){
       this.drawPlayer();
+    } else {
+      this.pause();
+      this.onGameOver();
     }
     if (!this.enemy.enemyHit) {
       this.drawEnemy();
