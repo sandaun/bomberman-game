@@ -11,6 +11,8 @@ class Enemy {
     this.maxColumns = maxColumns;
     this.bombRange = 1; // Range cells for the bomb when explotes
     this.enemyHit = false;
+    this.enemyImage = new Image();
+    this.enemyImage.src = 'images/enemy.png';
   }
 
   start (grid) {

@@ -3,6 +3,7 @@ class Game {
     this.player = new Player(options.columns, options.rows, options.widthCell);
     this.grid = new Grid(options.columns, options.rows, options.widthCell);
     this.enemy = new Enemy(options.columns, options.rows, options.widthCell);
+    this.enemies = [];
     this.fixObstacle = undefined; // Not used at the moment, maybe in Grid class
     this.rows = options.rows;
     this.columns = options.columns;
@@ -11,6 +12,8 @@ class Game {
     this.intervalGame = undefined;
     // this.updatePointsCB = undefined;
     this.points = 0;
+    this.quantityEnemies = 4;
+    this.createEnemies();
   }
 
   // --------------- DRAW BOARD FUNCTIONS ----------------
@@ -160,6 +163,7 @@ class Game {
     };
   }
 
+// ----------------------------- THROWING THE BOMB FUNCTIONS ----------------------------------
   throwTheBomb() {
     let bombGridPosition = this.player.throwBomb();
     let buildBomb = this.grid.buildBomb(bombGridPosition);
@@ -179,43 +183,54 @@ class Game {
         this.pause();
         this.onGameOver();
       }.bind(this),500);
-      // this.pause();
-      // this.onGameOver();
     }
   }
 
   isEnemyHit(bombGridPosition) {
-    if (this.enemy.bombVsEnemyPosition(bombGridPosition)) {
-      this.points += 1000;
-      this.enemy.stop();
-      this.enemy.enemyHit = true;
-      this.enemy.positionX = 0;
-      this.enemy.positionY = 0;
-    }
+    this.enemies.forEach((enemy, index) => {
+      if (enemy.bombVsEnemyPosition(bombGridPosition)) {
+        this.points += 1000;
+       // enemy.stop();
+       // enemy.enemyHit = true;
+        this.enemies.splice(index, 1);
+        // enemy.positionX = 0;
+        // enemy.positionY = 0;
+      }
+    });
   }
 
-  // ----------------- ENEMY FUNCTIONS ------------------
+  // ------------------------------ ENEMY FUNCTIONS ----------------------------------
   drawEnemy () {
     // this.ctx.fillStyle = '#FF3333';
     // this.ctx.fillRect(this.enemy.positionX, this.enemy.positionY, this.enemy.height, this.enemy.width);
-    let enemy = new Image();
-    enemy.src = 'images/enemy.png';
-    this.ctx.drawImage(enemy, this.enemy.positionX, this.enemy.positionY, this.enemy.height, this.enemy.width);
+    this.enemies.forEach((enemy) => {
+      this.ctx.drawImage(enemy.enemyImage, enemy.positionX, enemy.positionY, enemy.height, enemy.width);
+    });
   }
 
   // COLLISION BETWEEN PLAYER AND ENEMY
   enemyMeetPlayer () {
-    let playerLeft = this.player.positionX;
-    let playerRight = this.player.positionX + this.widthCell;
-    let playerUp = this.player.positionY;
-    let playerDown = this.player.positionY + this.widthCell;
-    let enemyLeft = this.enemy.positionX;
-    let enemyRight = this.enemy.positionX + this.widthCell;
-    let enemyUp =  this.enemy.positionY;
-    let enemyDown = this.enemy.positionY + this.widthCell;
+    this.enemies.forEach((enemy) => {
 
-    if (playerRight > enemyLeft && playerLeft < enemyRight && playerDown > enemyUp && playerUp < enemyDown) {
-      return true;
+      let playerLeft = this.player.positionX;
+      let playerRight = this.player.positionX + this.widthCell;
+      let playerUp = this.player.positionY;
+      let playerDown = this.player.positionY + this.widthCell;
+      let enemyLeft = enemy.positionX;
+      let enemyRight = enemy.positionX + this.widthCell;
+      let enemyUp =  enemy.positionY;
+      let enemyDown = enemy.positionY + this.widthCell;
+  
+      if (playerRight > enemyLeft && playerLeft < enemyRight && playerDown > enemyUp && playerUp < enemyDown) {
+        this.player.playerIsHit = true;
+      }
+    });
+    return this.player.playerIsHit;
+  }
+  
+  createEnemies () {
+    for (let i = 0; i < this.quantityEnemies; i++) {
+      this.enemies.push(new Enemy(this.columns, this.rows, this.widthCell));
     }
   }
 
@@ -231,7 +246,9 @@ class Game {
 
   start() {
     this.assignControlsToKeys();
-    this.enemy.move(this.grid);
+    this.enemies.forEach((enemy) => {
+      enemy.move(this.grid);
+    });
     this.update();
     this.intervalGame = window.requestAnimationFrame(this.update.bind(this));
   }
@@ -242,11 +259,15 @@ class Game {
 
   pause () {
     if (this.intervalGame) {
-      this.enemy.stop();
+      this.enemies.forEach((enemy) => {
+        enemy.stop();
+      });
       window.cancelAnimationFrame(this.intervalGame);
       this.intervalGame = undefined;
     } else {
-      this.enemy.start(this.grid);
+      this.enemies.forEach((enemy) => {
+        enemy.start(this.grid);
+      });
       this.intervalGame = window.requestAnimationFrame(this.update.bind(this));
     }
   }
@@ -261,9 +282,7 @@ class Game {
       this.pause();
       this.onGameOver();
     }
-    if (!this.enemy.enemyHit) {
-      this.drawEnemy();
-    }
+    this.drawEnemy();
     this.addScore();
     //this.drawPlayer();
     //this.enemy.moveDirection(this.grid);
