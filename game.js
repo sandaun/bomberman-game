@@ -29,6 +29,8 @@ class Game {
     brickbreak.src = 'images/brickbreak.png';
     let bomb = new Image();
     bomb.src = 'images/bombV2.png';
+    let door = new Image();
+    door.src = 'images/door.png';
 
     for (let i = 0; i < this.grid.gameGrid.length; i++) {
       for (let j = 0; j < this.grid.gameGrid[i].length; j++) {
@@ -38,8 +40,9 @@ class Game {
           this.ctx.drawImage(brick, j * this.widthCell, i * this.widthCell, this.widthCell, this.widthCell);
         }
         if (this.grid.gameGrid[i][j] === this.grid.gridElements.key) {
-          this.ctx.fillStyle = 'blue';
-          this.ctx.fillRect(j * this.widthCell, i * this.widthCell, this.widthCell, this.widthCell);
+          // this.ctx.fillStyle = 'blue';
+          // this.ctx.fillRect(j * this.widthCell, i * this.widthCell, this.widthCell, this.widthCell);
+          this.ctx.drawImage(door, j * this.widthCell, i * this.widthCell, this.widthCell, this.widthCell);
         }
         if (this.grid.gameGrid[i][j] === this.grid.gridElements.breakableBrick) {
           //this.ctx.fillStyle = 'darkgrey';
