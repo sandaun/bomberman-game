@@ -28,6 +28,7 @@ class Enemy {
       case 'up':
         if(!this.checkCollision(this.positionX / this.widthCell, (this.positionY - 10) / this.widthCell, grid)){
           this.positionY -= 10;
+          this.randomCellChangeDirection();
         } else {
           if (this.randomDirection() !== 'up') {
             this.direction = this.randomDirection();
@@ -37,6 +38,7 @@ class Enemy {
       case 'down':
         if(!this.checkCollision(this.positionX / this.widthCell, (this.positionY + 10) / this.widthCell, grid)){
           this.positionY += 10;
+          this.randomCellChangeDirection();
         } else {
           if (this.randomDirection() !== 'down') {
             this.direction = this.randomDirection();
@@ -46,6 +48,7 @@ class Enemy {
       case 'left':
         if(!this.checkCollision((this.positionX - 10) / this.widthCell, this.positionY / this.widthCell, grid)){
           this.positionX -= 10;
+          this.randomCellChangeDirection();
         } else {
           if (this.randomDirection() !== 'left') {
             this.direction = this.randomDirection();
@@ -55,6 +58,7 @@ class Enemy {
       case 'right':
         if(!this.checkCollision((this.positionX + 10) / this.widthCell, this.positionY / this.widthCell, grid)){
           this.positionX += 10;
+          this.randomCellChangeDirection();
         } else {
           if (this.randomDirection() !== 'right') {
             this.direction = this.randomDirection();
@@ -62,7 +66,12 @@ class Enemy {
         }
         break;
     }
+  }
 
+  randomCellChangeDirection() {
+    if ((this.positionX + this.widthCell) % (this.widthCell * 2) === 0 && (this.positionY + this.widthCell) % (this.widthCell * 2) === 0) {
+      this.direction = this.randomDirection();
+    }
   }
 
   randomDirection () {
