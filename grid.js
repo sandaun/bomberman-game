@@ -6,34 +6,14 @@ class Grid {
     this.points = 0;
     this.gridElements = {
       empty: '',
-    //  player: 'P', Player will not be built in grid
       brick: 'B',
       key: 'K',
       breakableBrick: 'BB',
-     // enemy: 'E', Enemy will not be built in grid as it will be considered like to work like player
       bomb: 'BM',
-      flame: 'F'
     };
     this.quantityBreakable = 3;
-    // this.grid = [
-    //   ['B','B','B','B','B','B','B','B','B','B','B','B','B','B','B'],
-    //   ['B','','','','','','','','','','','','','','B'],
-    //   ['B','','B','','B','','B','','B','','B','','B','','B'],
-    //   ['B','','','','','','','','','','','','','','B'],
-    //   ['B','','B','','B','','B','','B','','B','','B','','B'],
-    //   ['B','','','','','','','','','','','','','','B'],
-    //   ['B','','B','','B','','B','','B','','B','','B','','B'],
-    //   ['B','','','','','','','','','','','','','','B'],
-    //   ['B','','B','','B','','B','','B','','B','','B','','B'],
-    //   ['B','','','','','','','','','','','','','','B'],
-    //   ['B','','B','','B','','B','','B','','B','','B','','B'],
-    //   ['B','','','','','','','','','','','','','','B'],
-    //   ['B','B','B','B','B','B','B','B','B','B','B','B','B','B','B'],
-    // ];
     this.gameGrid = this.generateGrid();
     this.buildFixedBricks();
-    // this.buildPlayer();
-    // this.buildKey();
     this.buildBreakableBrick();
     this.isKeyBuilt = false;
   }
@@ -72,10 +52,6 @@ class Grid {
     }
   }
 
-  // buildPlayer () { // ABANS D'IMPLEMENTAR TENIR EN COMPTE QUE NO COLISIONI AMB SI MATEIX SINO NO ES MOURÀ
-  //   this.gameGrid[1][1] = this.gridElements.player;
-  // }
-
   // buildKey () {
   //   let randomGridPosition = this.randomGridLoop();
   //   if (randomGridPosition != null && randomGridPosition.length > 0) {
@@ -104,7 +80,6 @@ class Grid {
   buildBomb (position) {
     if (position != null && position.length > 0 && this.gameGrid[position[0]][position[1]] === this.gridElements.empty) {
       this.gameGrid[position[0]][position[1]] = this.gridElements.bomb;
-     // let timeoutId = setTimeout(this.destroyElements.bind(this, position, playerPositionX, playerPositionY), 2000); // Could use a variable to control bomb time????
       return true;
     }
   }
@@ -178,19 +153,4 @@ class Grid {
     return false;
   }
 
-    // THIS RECURSIVE RANDOM FUNCTION DIDN'T WORKED. TRIED THE ABOVE WITH WHILE AND WORKED FINE. WHY??
-
-  // randomGripRecursive(posX, posY) {
-  //   if (this.grid[posX][posY] !== '') {
-  //     posX = Math.floor(Math.random() * (this.rows-1));
-  //     posY = Math.floor(Math.random() * (this.columns-1));
-  //     this.randomGripRecursive(posX, posY);
-  //   } else {
-  //     let posArray = [];
-  //     posArray.push(posX, posY);
-  //     console.log('random grid position finished '+ posArray);
-  //     return posArray;
-  //   }
-  // }
-   
 }
