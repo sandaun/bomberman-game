@@ -182,7 +182,7 @@ class Game {
 
   isEnemyHit(bombGridPosition) {
     if (this.enemy.bombVsEnemyPosition(bombGridPosition)) {
-      this.points += 100;
+      this.points += 1000;
       this.enemy.stop();
       this.enemy.enemyHit = true;
       this.enemy.positionX = 0;

@@ -14,7 +14,7 @@ class Grid {
       bomb: 'BM',
       flame: 'F'
     };
-    this.quantityBreakable = 10;
+    this.quantityBreakable = 3;
     // this.grid = [
     //   ['B','B','B','B','B','B','B','B','B','B','B','B','B','B','B'],
     //   ['B','','','','','','','','','','','','','','B'],
@@ -33,8 +33,9 @@ class Grid {
     this.gameGrid = this.generateGrid();
     this.buildFixedBricks();
     // this.buildPlayer();
-    this.buildKey();
+    // this.buildKey();
     this.buildBreakableBrick();
+    this.isKeyBuilt = false;
   }
 
   generateGrid () {
@@ -75,10 +76,21 @@ class Grid {
   //   this.gameGrid[1][1] = this.gridElements.player;
   // }
 
-  buildKey () {
-    let randomGridPosition = this.randomGridLoop();
-    if (randomGridPosition != null && randomGridPosition.length > 0) {
-      this.gameGrid[randomGridPosition[0]][randomGridPosition[1]] = this.gridElements.key;
+  // buildKey () {
+  //   let randomGridPosition = this.randomGridLoop();
+  //   if (randomGridPosition != null && randomGridPosition.length > 0) {
+  //     this.gameGrid[randomGridPosition[0]][randomGridPosition[1]] = this.gridElements.key;
+  //   }
+  // }
+
+  isKeyBehindBrickRandom (positionY, positionX) {
+    let quantityForRandom = this.quantityBreakable + 1;
+    let randomBriks = Math.floor(Math.random() * quantityForRandom);
+    console.log(this.quantityBreakable);
+    console.log(randomBriks);
+    if (randomBriks === 0 && this.isKeyBuilt === false) {
+      this.gameGrid[positionY][positionX] = this.gridElements.key;
+      this.isKeyBuilt = true;
     }
   }
 
@@ -111,19 +123,24 @@ class Grid {
     }
     if (bombPosition != null && bombPosition.length > 0 && this.gameGrid[bombUp[0]][bombUp[1]] === this.gridElements.breakableBrick) { 
       this.gameGrid[bombUp[0]][bombUp[1]] = this.gridElements.empty;
-      this.points++;
+      this.quantityBreakable -=1;
+      this.points += 100;
+      this.isKeyBehindBrickRandom(bombUp[0], bombUp[1]);
     } 
     if (bombPosition != null && bombPosition.length > 0 && this.gameGrid[bombDown[0]][bombDown[1]] === this.gridElements.breakableBrick) {
       this.gameGrid[bombDown[0]][bombDown[1]] = this.gridElements.empty;
-      this.points++;
+      this.quantityBreakable -=1;
+      this.points += 100;
     } 
     if (bombPosition != null && bombPosition.length > 0 && this.gameGrid[bombLeft[0]][bombLeft[1]] === this.gridElements.breakableBrick) {
       this.gameGrid[bombLeft[0]][bombLeft[1]] = this.gridElements.empty;
-      this.points++;
+      this.quantityBreakable -=1;
+      this.points += 100;
     } 
     if (bombPosition != null && bombPosition.length > 0 && this.gameGrid[bombRight[0]][bombRight[1]] === this.gridElements.breakableBrick) {
       this.gameGrid[bombRight[0]][bombRight[1]] = this.gridElements.empty;
-      this.points++;
+      this.quantityBreakable -=1;
+      this.points += 100;
     } 
   }
 
