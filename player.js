@@ -11,6 +11,7 @@ class Player {
     this.maxColumns = maxColumns;
     this.bombRange = 1; // Range cells for the bomb when explotes
     this.playerIsHit = false;
+    // this.playerLives = 3;
 
     // this.character = new Image();
     // this.character.src = '/Users/oriolcarbo/code/ironhack/module-1/bomberman-game/images/character.png';

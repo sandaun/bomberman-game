@@ -12,8 +12,9 @@ class Game {
     this.intervalGame = undefined;
     // this.updatePointsCB = undefined;
     this.points = 0;
-    this.quantityEnemies = 4;
+    // this.quantityEnemies = 4;
     this.createEnemies();
+    this.startCreatingEnemies();
   }
 
   // --------------- DRAW BOARD FUNCTIONS ----------------
@@ -68,8 +69,7 @@ class Game {
         x2 = Math.floor(x + 1 - 1 / this.widthCell), 
         y2 = Math.floor(y + 1 - 1 / this.widthCell);
 
-    if (this.checkTileContent(y1, x1, y2, x2, this.grid.gridElements.key)) {
-      console.log('You win');
+    if (this.checkTileContent(y1, x1, y2, x2, this.grid.gridElements.key)) { // You win on this case!
       this.pause();
       this.onWinGame();
     } else if (this.checkTileContent(y1, x1, y2, x2, this.grid.gridElements.empty)) {
@@ -178,11 +178,15 @@ class Game {
 
   isPlayerHit(bombGridPosition) {
     if (this.player.bombVsPlayerPosition(bombGridPosition)) {
+      // this.player.playerIsHit = true;
       console.log('You are DEAD');
-      let timeoutId = setTimeout(function () { // This timeout is to give the bomb time to destroy the elements before stopping the game.
-        this.pause();
-        this.onGameOver();
-      }.bind(this),500);
+      // if (this.player.playerLives === 0) {
+        let timeoutId = setTimeout(function () { // This timeout is to give the bomb time to destroy the elements before stopping the game.
+          this.pause();
+          this.onGameOver();
+        }.bind(this),500);
+      // }
+      return true;
     }
   }
 
@@ -190,11 +194,7 @@ class Game {
     this.enemies.forEach((enemy, index) => {
       if (enemy.bombVsEnemyPosition(bombGridPosition)) {
         this.points += 1000;
-       // enemy.stop();
-       // enemy.enemyHit = true;
         this.enemies.splice(index, 1);
-        // enemy.positionX = 0;
-        // enemy.positionY = 0;
       }
     });
   }
@@ -229,9 +229,19 @@ class Game {
   }
   
   createEnemies () {
-    for (let i = 0; i < this.quantityEnemies; i++) {
+    // for (let i = 0; i < this.quantityEnemies; i++) {
       this.enemies.push(new Enemy(this.columns, this.rows, this.widthCell));
-    }
+    // }
+  }
+
+  startCreatingEnemies () {
+    this.createEnemiesInterval = setInterval(this.createEnemies.bind(this), 15000);
+  }
+
+  startMoveEnemies() {
+    this.enemies.forEach((enemy) => {
+      enemy.move(this.grid);
+    });
   }
 
   // ------------------------ POINTS ------------------------- 
@@ -246,9 +256,7 @@ class Game {
 
   start() {
     this.assignControlsToKeys();
-    this.enemies.forEach((enemy) => {
-      enemy.move(this.grid);
-    });
+    // this.startMoveEnemies();
     this.update();
     this.intervalGame = window.requestAnimationFrame(this.update.bind(this));
   }
@@ -262,15 +270,30 @@ class Game {
       this.enemies.forEach((enemy) => {
         enemy.stop();
       });
+      clearInterval(this.createEnemiesInterval);
       window.cancelAnimationFrame(this.intervalGame);
       this.intervalGame = undefined;
     } else {
       this.enemies.forEach((enemy) => {
         enemy.start(this.grid);
       });
+      this.startCreatingEnemies();
       this.intervalGame = window.requestAnimationFrame(this.update.bind(this));
     }
   }
+
+  // playerLivesOut () {
+  //   if (this.player.playerIsHit === true) {
+  //     console.log('yaaaay');
+  //     this.player.playerLives -= 1;
+  //     this.player.playerIsHit = false;
+  //     this.player.positionX = 50;
+  //     this.player.positionY = 50;
+  //     console.log(this.player.playerLives);
+  //   } else {
+  //     console.log('nayyyy');
+  //   }
+  // }
 
   update() {
     this.clear();
@@ -284,7 +307,10 @@ class Game {
     }
     this.drawEnemy();
     this.addScore();
-    //this.drawPlayer();
+    this.startMoveEnemies();
+    // this.playerLivesOut();
+    // this.drawPlayer();
+    // this.enemyMeetPlayer();
     //this.enemy.moveDirection(this.grid);
     if (this.intervalGame !== undefined) {
       this.intervalGame = window.requestAnimationFrame(this.update.bind(this));
