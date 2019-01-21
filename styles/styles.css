@@ -142,30 +142,28 @@ p {
   color: white;
 }
 
-/* .begin {
-  flex-direction: column;
-  align-items: center;
-  font-family: VT323;
+
+.instructions {
+  text-align: left;
+  margin-top: 10px;
+  margin-left: 10px;
+  list-style-type: none;
+  font-family: 'Press Start 2P';
+  font-style: bold;
+  font-size: 0.7em;
   color: white;
-  font-size: 30px;
 }
 
-.canvas {
-  margin-top: 50px;
-  display: flex;
-  justify-content: center;
+.instmargin {
+  margin-top: 270px;
 }
 
-.gameover {
-  flex-direction: column;
-  align-items: center;
-} */
-
-.title_text {
+/* .title_text {
   font-family: 'Press Start 2P';
   font-size: 3em;
   color:white;
-}
+} */
+
 .startbutton {
   background: transparent;
   border: 2px solid white;
@@ -180,10 +178,6 @@ p {
   font-weight: 700;
   margin-top: 20px;
 }
-
-/* .startbutton:hover {
-  border-color: rgb(30, 56, 202);
-} */
 
 .startbutton span {
   font-family: 'Press Start 2P';
