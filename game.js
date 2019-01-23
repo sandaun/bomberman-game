@@ -14,7 +14,9 @@ class Game {
     this.points = 0;
     // this.quantityEnemies = 4;
     this.createEnemies();
-    this.startCreatingEnemies();
+    this.bombSpriteGridJ = 0;
+    this.bombSpriteGridI = 0;
+    this.bombSpriteInterval();
   }
 
   // --------------- DRAW BOARD FUNCTIONS ----------------
@@ -56,10 +58,18 @@ class Game {
         if (this.grid.gameGrid[i][j] === this.grid.gridElements.bomb) {
           // this.ctx.fillStyle = 'black';
           // this.ctx.fillRect(j * this.widthCell, i * this.widthCell, this.widthCell, this.widthCell);
-          this.ctx.drawImage(bomb, j * this.widthCell, i * this.widthCell, this.widthCell, this.widthCell);
+          // this.player.updateFrame(this.ctx, j * this.widthCell, i * this.widthCell);
+          this.bombSpriteGridJ = j;
+          this.bombSpriteGridI = i;
+          this.ctx.drawImage(this.player.bomb, this.player.srcX, this.player.srcY, this.player.widthFrame, this.player.heightFrame, j * this.widthCell, i * this.widthCell, this.player.widthFrame, this.player.heightFrame);
+          // this.ctx.drawImage(bomb, j * this.widthCell, i * this.widthCell, this.widthCell, this.widthCell);
         }
       }
     }
+  }
+
+  bombSpriteInterval () {
+    this.bombInterval = setInterval(function(){this.player.updateFrame(this.ctx, this.bombSpriteGridJ * this.widthCell, this.bombSpriteGridI * this.widthCell);}.bind(this), 150);
   }
 
   // ----------------- CHECK COLLISIONS ------------------
@@ -90,24 +100,24 @@ class Game {
     // this.ctx.fillStyle = '#FFFF33';
     // this.ctx.fillRect(this.player.positionX, this.player.positionY, this.player.height, this.player.width);
     if (this.player.direction === 'up') {
-      let bomb = new Image();
-      bomb.src = 'images/playerUp.png';
-      this.ctx.drawImage(bomb, this.player.positionX, this.player.positionY, this.player.height, this.player.width);
+      let playerUp = new Image();
+      playerUp.src = 'images/playerUp.png';
+      this.ctx.drawImage(playerUp, this.player.positionX, this.player.positionY, this.player.height, this.player.width);
     }
     if (this.player.direction === 'down') {
-      let bomb = new Image();
-      bomb.src = 'images/playerDown.png';
-      this.ctx.drawImage(bomb, this.player.positionX, this.player.positionY, this.player.height, this.player.width);
+      let playerDown = new Image();
+      playerDown.src = 'images/playerDown.png';
+      this.ctx.drawImage(playerDown, this.player.positionX, this.player.positionY, this.player.height, this.player.width);
     }
     if (this.player.direction === 'left') {
-      let bomb = new Image();
-      bomb.src = 'images/playerLeft.png';
-      this.ctx.drawImage(bomb, this.player.positionX, this.player.positionY, this.player.height, this.player.width);
+      let playerLeft = new Image();
+      playerLeft.src = 'images/playerLeft.png';
+      this.ctx.drawImage(playerLeft, this.player.positionX, this.player.positionY, this.player.height, this.player.width);
     }
     if (this.player.direction === 'right') {
-      let bomb = new Image();
-      bomb.src = 'images/playerRight.png';
-      this.ctx.drawImage(bomb, this.player.positionX, this.player.positionY, this.player.height, this.player.width);
+      let playerRight = new Image();
+      playerRight.src = 'images/playerRight.png';
+      this.ctx.drawImage(playerRight, this.player.positionX, this.player.positionY, this.player.height, this.player.width);
     }
     // this.player.updateFrame(this.ctx); THIS IS FOR THE SPRITE
     // this.ctx.drawImage(this.player.character, this.player.srcX, this.player.srcY, this.player.widthFrame, this.player.heightFrame, this.player.x, this.player.y, this.player.widthFrame, this.player.heightFrame);
@@ -180,12 +190,10 @@ class Game {
     if (this.player.bombVsPlayerPosition(bombGridPosition)) {
       // this.player.playerIsHit = true;
       console.log('You are DEAD');
-      // if (this.player.playerLives === 0) {
         let timeoutId = setTimeout(function () { // This timeout is to give the bomb time to destroy the elements before stopping the game.
           this.pause();
           this.onGameOver();
         }.bind(this),500);
-      // }
       return true;
     }
   }
@@ -256,7 +264,7 @@ class Game {
 
   start() {
     this.assignControlsToKeys();
-    // this.startMoveEnemies();
+    this.startCreatingEnemies();
     this.update();
     this.intervalGame = window.requestAnimationFrame(this.update.bind(this));
   }
@@ -271,6 +279,7 @@ class Game {
         enemy.stop();
       });
       clearInterval(this.createEnemiesInterval);
+      clearInterval(this.bombInterval);
       window.cancelAnimationFrame(this.intervalGame);
       this.intervalGame = undefined;
     } else {
@@ -278,22 +287,10 @@ class Game {
         enemy.start(this.grid);
       });
       this.startCreatingEnemies();
+      this.bombSpriteInterval();
       this.intervalGame = window.requestAnimationFrame(this.update.bind(this));
     }
   }
-
-  // playerLivesOut () {
-  //   if (this.player.playerIsHit === true) {
-  //     console.log('yaaaay');
-  //     this.player.playerLives -= 1;
-  //     this.player.playerIsHit = false;
-  //     this.player.positionX = 50;
-  //     this.player.positionY = 50;
-  //     console.log(this.player.playerLives);
-  //   } else {
-  //     console.log('nayyyy');
-  //   }
-  // }
 
   update() {
     this.clear();
@@ -308,10 +305,6 @@ class Game {
     this.drawEnemy();
     this.addScore();
     this.startMoveEnemies();
-    // this.playerLivesOut();
-    // this.drawPlayer();
-    // this.enemyMeetPlayer();
-    //this.enemy.moveDirection(this.grid);
     if (this.intervalGame !== undefined) {
       this.intervalGame = window.requestAnimationFrame(this.update.bind(this));
     }

@@ -11,53 +11,44 @@ class Player {
     this.maxColumns = maxColumns;
     this.bombRange = 1; // Range cells for the bomb when explotes
     this.playerIsHit = false;
-    // this.playerLives = 3;
 
-    // this.character = new Image();
-    // this.character.src = '/Users/oriolcarbo/code/ironhack/module-1/bomberman-game/images/character.png';
-    // this.spriteWidth = 294;
-    // this.spriteHeight = 80;
-    // this.rows = 2;
-    // this.cols = 6;
+    this.bomb = new Image();
+    this.bomb.src = 'images/bombspritev2.png';
+    this.spriteWidth = 150;
+    this.spriteHeight = 48;
+    this.rows = 1;
+    this.cols = 3;
     // this.trackRight = 0;
     // this.trackLeft = 1;
-    // this.widthFrame = this.spriteWidth/this.cols;
-    // this.heightFrame = this.spriteHeight/this.rows;
-    // this.currentFrame = 0;
-    // this.frameCount = 6;
+    this.widthFrame = this.spriteWidth/this.cols;
+    this.heightFrame = this.spriteHeight/this.rows;
+    this.currentFrame = 0;
+    this.frameCount = 3;
     // this.x = 0;
     // this.y = 0;
-    // this.srcX = 0;
-    // this.srcY = 0;
+    this.srcX = 0;
+    this.srcY = 0;
   }
 
-  // updateFrame (ctx) {
-  //   ctx.clearRect(this.x, this.y, this.widthFrame, this.heightFrame);
-  //   this.currentFrame = ++this.currentFrame % this.frameCount;
-  //   this.srcX = this.currentFrame * this.widthFrame;
-  // }
+  updateFrame (ctx, j, i) {
+    ctx.clearRect(j, i, this.widthFrame, this.heightFrame);
+    this.currentFrame = ++this.currentFrame % this.frameCount;
+    this.srcX = this.currentFrame * this.widthFrame;
+  }
 
   moveDirection () {
     switch (this.direction) {
       case 'up':
-       // if (this.positionY > 0) {
           this.positionY -= 10;
-       // }
         break;
       case 'down':
-       // if (this.positionY < (this.maxColumns * 50 - this.height)) {
           this.positionY += 10;
-       // }
         break;
       case 'left':
-       // if (this.positionX > 0) {
           this.positionX -= 10;
-       // }
         break;
       case 'right':
-       // if (this.positionX < (this.maxRows * 50 - this.width)) {
           this.positionX += 10;
-       // }  
         break;
     }
 
