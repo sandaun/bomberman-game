@@ -11,7 +11,7 @@ class Grid {
       breakableBrick: 'BB',
       bomb: 'BM',
     };
-    this.quantityBreakable = 3;
+    this.quantityBreakable = 15;
     this.gameGrid = this.generateGrid();
     this.buildFixedBricks();
     this.buildBreakableBrick();
@@ -51,13 +51,6 @@ class Grid {
       }
     }
   }
-
-  // buildKey () {
-  //   let randomGridPosition = this.randomGridLoop();
-  //   if (randomGridPosition != null && randomGridPosition.length > 0) {
-  //     this.gameGrid[randomGridPosition[0]][randomGridPosition[1]] = this.gridElements.key;
-  //   }
-  // }
 
   isKeyBehindBrickRandom (positionY, positionX) {
     let quantityForRandom = this.quantityBreakable + 1;

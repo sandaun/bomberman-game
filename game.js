@@ -10,9 +10,9 @@ class Game {
     this.widthCell = options.widthCell;
     this.ctx = options.ctx;
     this.intervalGame = undefined;
-    // this.updatePointsCB = undefined;
     this.points = 0;
-    // this.quantityEnemies = 4;
+    this.quantityEnemies = 2;
+    this.gameBegins = true;
     this.createEnemies();
     this.bombSpriteGridJ = 0;
     this.bombSpriteGridI = 0;
@@ -21,9 +21,6 @@ class Game {
 
   // --------------- DRAW BOARD FUNCTIONS ----------------
   drawBoard () {
-  //   var img = new Image();
-  //   img.src = '/Users/oriolcarbo/code/ironhack/module-1/bomberman-game/images/grass.png';
-  //   this.ctx.drawImage(img, 0, 0,this.columns * this.widthCell, this.rows * this.widthCell);
     this.ctx.fillStyle = "#41ae41";
     this.ctx.fillRect(0,0, this.columns * this.widthCell, this.rows * this.widthCell);
   }
@@ -41,27 +38,18 @@ class Game {
     for (let i = 0; i < this.grid.gameGrid.length; i++) {
       for (let j = 0; j < this.grid.gameGrid[i].length; j++) {
         if (this.grid.gameGrid[i][j] === this.grid.gridElements.brick) {
-          //this.ctx.fillStyle = 'gray';
-          //this.ctx.fillRect(j * this.widthCell, i * this.widthCell, this.widthCell, this.widthCell);
           this.ctx.drawImage(brick, j * this.widthCell, i * this.widthCell, this.widthCell, this.widthCell);
         }
         if (this.grid.gameGrid[i][j] === this.grid.gridElements.key) {
-          // this.ctx.fillStyle = 'blue';
-          // this.ctx.fillRect(j * this.widthCell, i * this.widthCell, this.widthCell, this.widthCell);
           this.ctx.drawImage(door, j * this.widthCell, i * this.widthCell, this.widthCell, this.widthCell);
         }
         if (this.grid.gameGrid[i][j] === this.grid.gridElements.breakableBrick) {
-          //this.ctx.fillStyle = 'darkgrey';
-          //this.ctx.fillRect(j * this.widthCell, i * this.widthCell, this.widthCell, this.widthCell);
           this.ctx.drawImage(brickbreak, j * this.widthCell, i * this.widthCell, this.widthCell, this.widthCell);
         }
         if (this.grid.gameGrid[i][j] === this.grid.gridElements.bomb) {
-          // this.ctx.fillStyle = 'black';
-          // this.ctx.fillRect(j * this.widthCell, i * this.widthCell, this.widthCell, this.widthCell);
-          // this.player.updateFrame(this.ctx, j * this.widthCell, i * this.widthCell);
           this.bombSpriteGridJ = j;
           this.bombSpriteGridI = i;
-          this.ctx.drawImage(this.player.bomb, this.player.srcX, this.player.srcY, this.player.widthFrame, this.player.heightFrame, j * this.widthCell, i * this.widthCell, this.player.widthFrame, this.player.heightFrame);
+          this.ctx.drawImage(this.player.bombSprite, this.player.srcX, this.player.srcY, this.player.widthFrame, this.player.heightFrame, j * this.widthCell, i * this.widthCell, this.player.widthFrame, this.player.heightFrame);
           // this.ctx.drawImage(bomb, j * this.widthCell, i * this.widthCell, this.widthCell, this.widthCell);
         }
       }
@@ -97,8 +85,6 @@ class Game {
 
   // --------------- PLAYER FUNCTIONS ------------------
   drawPlayer () {
-    // this.ctx.fillStyle = '#FFFF33';
-    // this.ctx.fillRect(this.player.positionX, this.player.positionY, this.player.height, this.player.width);
     if (this.player.direction === 'up') {
       let playerUp = new Image();
       playerUp.src = 'images/playerUp.png';
@@ -119,8 +105,6 @@ class Game {
       playerRight.src = 'images/playerRight.png';
       this.ctx.drawImage(playerRight, this.player.positionX, this.player.positionY, this.player.height, this.player.width);
     }
-    // this.player.updateFrame(this.ctx); THIS IS FOR THE SPRITE
-    // this.ctx.drawImage(this.player.character, this.player.srcX, this.player.srcY, this.player.widthFrame, this.player.heightFrame, this.player.x, this.player.y, this.player.widthFrame, this.player.heightFrame);
   }
   
   assignControlsToKeys () {
@@ -166,7 +150,6 @@ class Game {
           this.throwTheBomb();
           break; 
         case 80: // p pause
-          // this.enemy.intervalId ? this.enemy.stop() : this.enemy.start(this.grid);
           this.pause();
           break;
       }
@@ -188,8 +171,6 @@ class Game {
 
   isPlayerHit(bombGridPosition) {
     if (this.player.bombVsPlayerPosition(bombGridPosition)) {
-      // this.player.playerIsHit = true;
-      console.log('You are DEAD');
         let timeoutId = setTimeout(function () { // This timeout is to give the bomb time to destroy the elements before stopping the game.
           this.pause();
           this.onGameOver();
@@ -209,8 +190,6 @@ class Game {
 
   // ------------------------------ ENEMY FUNCTIONS ----------------------------------
   drawEnemy () {
-    // this.ctx.fillStyle = '#FF3333';
-    // this.ctx.fillRect(this.enemy.positionX, this.enemy.positionY, this.enemy.height, this.enemy.width);
     this.enemies.forEach((enemy) => {
       this.ctx.drawImage(enemy.enemyImage, enemy.positionX, enemy.positionY, enemy.height, enemy.width);
     });
@@ -237,13 +216,18 @@ class Game {
   }
   
   createEnemies () {
-    // for (let i = 0; i < this.quantityEnemies; i++) {
+    if (this.gameBegins === true) {
+      for (let i = 0; i < this.quantityEnemies; i++) {
+        this.enemies.push(new Enemy(this.columns, this.rows, this.widthCell));
+      }
+      this.gameBegins = false;
+    } else {
       this.enemies.push(new Enemy(this.columns, this.rows, this.widthCell));
-    // }
+    }
   }
 
   startCreatingEnemies () {
-    this.createEnemiesInterval = setInterval(this.createEnemies.bind(this), 15000);
+    this.createEnemiesInterval = setInterval(this.createEnemies.bind(this), 30000);
   }
 
   startMoveEnemies() {

@@ -12,20 +12,16 @@ class Player {
     this.bombRange = 1; // Range cells for the bomb when explotes
     this.playerIsHit = false;
 
-    this.bomb = new Image();
-    this.bomb.src = 'images/bombspritev2.png';
+    this.bombSprite = new Image();
+    this.bombSprite.src = 'images/bombspritev2.png';
     this.spriteWidth = 150;
     this.spriteHeight = 48;
     this.rows = 1;
     this.cols = 3;
-    // this.trackRight = 0;
-    // this.trackLeft = 1;
     this.widthFrame = this.spriteWidth/this.cols;
     this.heightFrame = this.spriteHeight/this.rows;
     this.currentFrame = 0;
     this.frameCount = 3;
-    // this.x = 0;
-    // this.y = 0;
     this.srcX = 0;
     this.srcY = 0;
   }
