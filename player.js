@@ -5,7 +5,7 @@ class Player {
     this.positionY = widthCell; // Player position initial. As a cell its 50x50 I can use widthCell to mark the position
     this.height = 50; 
     this.width = 50;
-    this.direction = 'up';
+    this.direction = 'down';
     this.intervalId = undefined;
     this.maxRows = maxRows;
     this.maxColumns = maxColumns;

@@ -20,7 +20,7 @@ class Enemy {
 
   move (grid) {
     if (!this.intervalId) {
-      this.intervalId = setInterval(this.moveDirection.bind(this), 50, grid);
+      this.intervalId = setInterval(this.moveDirection.bind(this), 60, grid);
     }
   }
 
