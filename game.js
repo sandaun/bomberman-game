@@ -76,14 +76,14 @@ class Game {
           this.bombSpriteGridI = i;
           this.ctx.drawImage(
             this.player.bombSprite,
-            this.player.srcX,
-            this.player.srcY,
-            this.player.widthFrame,
-            this.player.heightFrame,
+            this.player.bombSrcX,
+            this.player.bombSrcY,
+            this.player.bombWidthFrame,
+            this.player.bombHeightFrame,
             j * this.widthCell,
             i * this.widthCell,
-            this.player.widthFrame,
-            this.player.heightFrame
+            this.player.bombWidthFrame,
+            this.player.bombHeightFrame
           );
           // this.ctx.drawImage(bomb, j * this.widthCell, i * this.widthCell, this.widthCell, this.widthCell);
         }
@@ -94,7 +94,7 @@ class Game {
   bombSpriteInterval() {
     this.bombInterval = setInterval(
       function () {
-        this.player.updateFrame(
+        this.player.updateBombFrame(
           this.ctx,
           this.bombSpriteGridJ * this.widthCell,
           this.bombSpriteGridI * this.widthCell
@@ -140,121 +140,90 @@ class Game {
     );
   }
 
-  // --------------- PLAYER FUNCTIONS ------------------
-  drawPlayer() {
-    if (this.player.direction === 'up') {
-      let playerUp = new Image();
-      playerUp.src = 'images/playerUp.png';
-      this.ctx.drawImage(
-        playerUp,
-        this.player.positionX,
-        this.player.positionY,
-        this.player.height,
-        this.player.width
-      );
-    }
-    if (this.player.direction === 'down') {
-      let playerDown = new Image();
-      playerDown.src = 'images/playerDown.png';
-      this.ctx.drawImage(
-        playerDown,
-        this.player.positionX,
-        this.player.positionY,
-        this.player.height,
-        this.player.width
-      );
-    }
-    if (this.player.direction === 'left') {
-      let playerLeft = new Image();
-      playerLeft.src = 'images/playerLeft.png';
-      this.ctx.drawImage(
-        playerLeft,
-        this.player.positionX,
-        this.player.positionY,
-        this.player.height,
-        this.player.width
-      );
-    }
-    if (this.player.direction === 'right') {
-      let playerRight = new Image();
-      playerRight.src = 'images/playerRight.png';
-      this.ctx.drawImage(
-        playerRight,
-        this.player.positionX,
-        this.player.positionY,
-        this.player.height,
-        this.player.width
-      );
-    }
-  }
-
   assignControlsToKeys() {
+    let isShiftPressed = false; // Estat de Shift
+
     document.onkeydown = (e) => {
+      if (e.keyCode === 16) {
+        // Shift
+        isShiftPressed = true;
+        return;
+      }
+
       switch (e.keyCode) {
         case 87: // W
-          this.player.direction = 'up';
+        case 38: // Fletxa amunt
+          this.handleDirectionChange('up', isShiftPressed);
           break;
         case 83: // S
-          this.player.direction = 'down';
+        case 40: // Fletxa avall
+          this.handleDirectionChange('down', isShiftPressed);
           break;
         case 65: // A
-          this.player.direction = 'left';
+        case 37: // Fletxa esquerra
+          this.handleDirectionChange('left', isShiftPressed);
           break;
         case 68: // D
-          this.player.direction = 'right';
+        case 39: // Fletxa dreta
+          this.handleDirectionChange('right', isShiftPressed);
           break;
-        case 38: //arrow up
-          this.player.direction = 'up';
-          if (
-            !this.checkCollision(
-              this.player.positionX / this.widthCell,
-              (this.player.positionY - 10) / this.widthCell
-            )
-          ) {
-            this.player.moveDirection();
-          }
+        case 32: // Barra espaiadora
+          this.throwTheBomb(); // Llança la bomba
           break;
-        case 40: //arrow down
-          this.player.direction = 'down';
-          if (
-            !this.checkCollision(
-              this.player.positionX / this.widthCell,
-              (this.player.positionY + 10) / this.widthCell
-            )
-          ) {
-            this.player.moveDirection();
-          }
-          break;
-        case 37: //arrow left
-          this.player.direction = 'left';
-          if (
-            !this.checkCollision(
-              (this.player.positionX - 10) / this.widthCell,
-              this.player.positionY / this.widthCell
-            )
-          ) {
-            this.player.moveDirection();
-          }
-          break;
-        case 39: //arrow right
-          this.player.direction = 'right';
-          if (
-            !this.checkCollision(
-              (this.player.positionX + 10) / this.widthCell,
-              this.player.positionY / this.widthCell
-            )
-          ) {
-            this.player.moveDirection();
-          }
-          break;
-        case 32: //space
-          this.throwTheBomb();
-          break;
-        case 80: // p pause
+        case 80: // P per pausar
           this.pause();
           break;
       }
     };
+
+    document.onkeyup = (e) => {
+      if (e.keyCode === 16) {
+        // Shift
+        isShiftPressed = false;
+      }
+
+      if ([87, 38, 83, 40, 65, 37, 68, 39].includes(e.keyCode)) {
+        this.player.isMoving = false; // Atura el moviment si no premem cap altra tecla
+      }
+    };
+  }
+
+  handleDirectionChange(direction, isShiftPressed) {
+    this.player.direction = direction; // Actualitza la direcció del jugador
+
+    if (!isShiftPressed) {
+      // Només mou el jugador si Shift no està premut
+      this.player.isMoving = true;
+
+      if (!this.checkCollisionInDirection(direction)) {
+        this.player.moveDirection();
+      }
+    }
+  }
+
+  checkCollisionInDirection(direction) {
+    switch (direction) {
+      case 'up':
+        return this.checkCollision(
+          this.player.positionX / this.widthCell,
+          (this.player.positionY - 10) / this.widthCell
+        );
+      case 'down':
+        return this.checkCollision(
+          this.player.positionX / this.widthCell,
+          (this.player.positionY + 10) / this.widthCell
+        );
+      case 'left':
+        return this.checkCollision(
+          (this.player.positionX - 10) / this.widthCell,
+          this.player.positionY / this.widthCell
+        );
+      case 'right':
+        return this.checkCollision(
+          (this.player.positionX + 10) / this.widthCell,
+          this.player.positionY / this.widthCell
+        );
+    }
   }
 
   // ----------------------------- THROWING THE BOMB FUNCTIONS ----------------------------------
@@ -401,22 +370,30 @@ class Game {
   }
 
   update(currentTime) {
-    this.clear();
-    this.drawBoard();
-    this.drawBoardElements();
+    this.clear(); // Neteja tot el canvas
+    this.drawBoard(); // Dibuixa el fons verd
+    this.drawBoardElements(); // Dibuixa els blocs, bombes i altres elements
+
+    // Actualitzar i dibuixar el player
+    this.player.updatePlayerFrame(currentTime); // Actualitza l'animació del player
     if (!this.enemyMeetPlayer()) {
-      this.drawPlayer();
+      this.player.drawPlayer(this.ctx); // Dibuixa el player si no ha col·lisionat amb enemics
     } else {
-      this.pause();
-      this.onGameOver();
+      this.pause(); // Pausa el joc si el player és atrapat
+      this.onGameOver(); // Mostra la pantalla de Game Over
+      return; // Finalitza l'actualització per evitar dibuixar més
     }
+
     // Actualitzar i dibuixar enemics
     this.enemies.forEach((enemy) => {
-      enemy.updateFrame(currentTime); // Canvia frames si cal
-      enemy.drawEnemy(this.ctx); // Dibuixa el frame actual
+      enemy.updateFrame(currentTime); // Actualitza el frame de l'enemic
+      enemy.drawEnemy(this.ctx); // Dibuixa l'enemic
     });
-    this.addScore();
-    this.startMoveEnemies();
+
+    this.addScore(); // Actualitza el marcador
+    this.startMoveEnemies(); // Inicia el moviment dels enemics
+
+    // Continuar amb el cicle de joc
     if (this.intervalGame !== undefined) {
       this.intervalGame = window.requestAnimationFrame(this.update.bind(this));
     }

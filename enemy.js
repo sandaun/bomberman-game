@@ -13,8 +13,8 @@ class Enemy {
 
     this.enemyImage = new Image();
     this.enemyImage.src = 'images/BombermanEnemies.png';
-    this.spriteWidth = 329; // Amplada total del sprite
-    this.spriteHeight = 526; // Alçada total del sprite
+    // this.spriteWidth = 329; // Amplada total del sprite
+    // this.spriteHeight = 526; // Alçada total del sprite
     this.widthFrame = 16; // Amplada d'un frame
     this.heightFrame = 16; // Alçada d'un frame
     this.currentFrame = 0; // Frame actual

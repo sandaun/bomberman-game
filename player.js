@@ -3,7 +3,7 @@ class Player {
     this.widthCell = widthCell; // Cell size if needed
     this.positionX = widthCell; // Player position initial. As a cell its 50x50 I can use widthCell to mark the position
     this.positionY = widthCell; // Player position initial. As a cell its 50x50 I can use widthCell to mark the position
-    this.height = 50; 
+    this.height = 50;
     this.width = 50;
     this.direction = 'down';
     this.intervalId = undefined;
@@ -11,63 +11,162 @@ class Player {
     this.maxColumns = maxColumns;
     this.bombRange = 1; // Range cells for the bomb when explotes
     this.playerIsHit = false;
+    this.isMoving = false; // Indica si el player es mou
 
+    // Sprite del jugador
+    this.playerSprite = new Image();
+    this.playerSprite.src = 'images/BombermanPlayers.png'; // Ruta del sprite
+    this.playerWidthFrame = 24; // Amplada real del frame del player
+    this.playerHeightFrame = 24; // Alçada real del frame del player
+    this.playerCurrentFrame = 0; // Frame inicial del player
+    this.playerFrameCount = 3; // Frames per direcció
+    this.playerSrcX = 4; // Coordenada X inicial del frame del player
+    this.playerSrcY = 4; // Coordenada Y inicial del frame del player
+
+    this.playerLastFrameTime = 0; // Temps de l'últim canvi de frame del player
+    this.playerFrameInterval = 250; // Interval entre frames del player (ms)
+
+    // Sprite de la bomba
     this.bombSprite = new Image();
     this.bombSprite.src = 'images/bombspritev2.png';
-    this.spriteWidth = 150;
-    this.spriteHeight = 48;
-    this.rows = 1;
-    this.cols = 3;
-    this.widthFrame = this.spriteWidth/this.cols;
-    this.heightFrame = this.spriteHeight/this.rows;
-    this.currentFrame = 0;
-    this.frameCount = 3;
-    this.srcX = 0;
-    this.srcY = 0;
+    this.bombSpriteWidth = 150; // Amplada total del sprite de la bomba
+    this.bombSpriteHeight = 48; // Alçada total del sprite de la bomba
+    this.bombRows = 1; // Files al sprite de la bomba
+    this.bombCols = 3; // Columnes al sprite de la bomba
+    this.bombWidthFrame = this.bombSpriteWidth / this.bombCols; // Amplada d'un frame de la bomba
+    this.bombHeightFrame = this.bombSpriteHeight / this.bombRows; // Alçada d'un frame de la bomba
+    this.bombCurrentFrame = 0; // Frame inicial de la bomba
+    this.bombFrameCount = 3; // Nombre de frames de la bomba
+    this.bombSrcX = 0; // Coordenada X inicial del frame de la bomba
+    this.bombSrcY = 0; // Coordenada Y inicial del frame de la bomba
   }
 
-  updateFrame (ctx, j, i) {
-    ctx.clearRect(j, i, this.widthFrame, this.heightFrame);
-    this.currentFrame = ++this.currentFrame % this.frameCount;
-    this.srcX = this.currentFrame * this.widthFrame;
+  getSpriteCoordinates() {
+    const frames = {
+      down: [
+        // Moviment cap avall
+        { x: 4, y: 4 }, // Parat
+        { x: 29, y: 4 }, // Moviment 1
+        { x: 54, y: 4 }, // Moviment 2
+      ],
+      left: [
+        // Moviment cap a l'esquerra
+        { x: 79, y: 4 }, // Parat
+        { x: 104, y: 4 }, // Moviment 1
+        { x: 129, y: 4 }, // Moviment 2
+      ],
+      up: [
+        // Moviment cap amunt
+        { x: 154, y: 4 }, // Parat
+        { x: 179, y: 4 }, // Moviment 1
+        { x: 204, y: 4 }, // Moviment 2
+      ],
+      right: [
+        // Moviment cap a la dreta (mirall del moviment esquerra)
+        { x: 79, y: 4 }, // Parat (mirall)
+        { x: 104, y: 4 }, // Moviment 1 (mirall)
+        { x: 129, y: 4 }, // Moviment 2 (mirall)
+      ],
+    };
+
+    return frames[this.direction];
   }
 
-  moveDirection () {
-    switch (this.direction) {
-      case 'up':
-          this.positionY -= 10;
-        break;
-      case 'down':
-          this.positionY += 10;
-        break;
-      case 'left':
-          this.positionX -= 10;
-        break;
-      case 'right':
-          this.positionX += 10;
-        break;
+  updateBombFrame(ctx, j, i) {
+    ctx.clearRect(j, i, this.bombWidthFrame, this.bombHeightFrame);
+    this.bombCurrentFrame = ++this.bombCurrentFrame % this.bombFrameCount;
+    this.bombSrcX = this.bombCurrentFrame * this.bombWidthFrame;
+  }
+
+  updatePlayerFrame(currentTime) {
+    if (currentTime - this.playerLastFrameTime > this.playerFrameInterval) {
+      const frames = this.getSpriteCoordinates(); // Obté els frames per la direcció actual
+
+      // Incrementa el frame cíclicament si el player es mou
+      this.playerCurrentFrame = this.isMoving
+        ? (this.playerCurrentFrame + 1) % frames.length
+        : 0; // Manté el primer frame si està parat
+
+      // Actualitza les coordenades del frame actual del player
+      const frame = frames[this.playerCurrentFrame];
+      this.playerSrcX = frame.x;
+      this.playerSrcY = frame.y;
+
+      this.playerLastFrameTime = currentTime; // Actualitza l'últim temps
+    }
+  }
+
+  drawPlayer(ctx) {
+    ctx.save(); // Guarda l'estat del canvas
+
+    if (this.direction === 'right') {
+      ctx.scale(-1, 1); // Aplica el mirall horitzontal
+      ctx.drawImage(
+        this.playerSprite,
+        this.playerSrcX,
+        this.playerSrcY,
+        this.playerWidthFrame,
+        this.playerHeightFrame, // Frame del sprite
+        -this.positionX - this.width,
+        this.positionY,
+        this.width,
+        this.height // Posició i mida (ajustem X per compensar el mirall)
+      );
+    } else {
+      ctx.drawImage(
+        this.playerSprite,
+        this.playerSrcX,
+        this.playerSrcY,
+        this.playerWidthFrame,
+        this.playerHeightFrame, // Frame del sprite
+        this.positionX,
+        this.positionY,
+        this.width,
+        this.height // Posició i mida
+      );
     }
 
+    ctx.restore(); // Restaura l'estat del canvas
+  }
+
+  moveDirection() {
+    this.isMoving = true; // El player es mou
+
+    switch (this.direction) {
+      case 'up':
+        this.positionY -= 10;
+        break;
+      case 'down':
+        this.positionY += 10;
+        break;
+      case 'left':
+        this.positionX -= 10;
+        break;
+      case 'right':
+        this.positionX += 10;
+        break;
+    }
   }
 
   // This function calculates player position (column and row) and returns a position array where to throw
   // the bomb depending on the player direction. TO IMPROVE: just make player turn itself first and not move.
-  throwBomb () {
-    let { playerRightSide, playerLeftSide, playerUpSide, playerDownSide } = this.playerSideBySide();
+  throwBomb() {
+    let { playerRightSide, playerLeftSide, playerUpSide, playerDownSide } =
+      this.playerSideBySide();
     let bombPositionX = 0;
     let bombPositionY = 0;
     let bombGridPosition = [];
 
     switch (this.direction) {
-      case 'up': 
+      case 'up':
         bombPositionX = playerLeftSide; // Or rightside
         bombPositionY = playerUpSide - 1;
-        bombGridPosition.push(bombPositionY, bombPositionX);  
+        bombGridPosition.push(bombPositionY, bombPositionX);
         break;
       case 'down':
         bombPositionX = playerLeftSide; // Or rightside
         bombPositionY = playerDownSide + 1;
-        bombGridPosition.push(bombPositionY, bombPositionX);      
+        bombGridPosition.push(bombPositionY, bombPositionX);
         break;
       case 'left':
         bombPositionX = playerLeftSide - 1;
@@ -84,8 +183,9 @@ class Player {
   }
 
   // This function calculates if player is within the range of the bomb explosion in any of the 4 sides. If it is, player is killed (true).
-  bombVsPlayerPosition (bombPosition) {
-    let { playerRightSide, playerLeftSide, playerUpSide, playerDownSide } = this.playerSideBySide();
+  bombVsPlayerPosition(bombPosition) {
+    let { playerRightSide, playerLeftSide, playerUpSide, playerDownSide } =
+      this.playerSideBySide();
 
     let bombUp = [bombPosition[0] - this.bombRange, bombPosition[1]];
     let bombDown = [bombPosition[0] + this.bombRange, bombPosition[1]];
@@ -96,14 +196,24 @@ class Player {
     // Second if condition (else if) checks when player can be in two different tiles in X axis (so x1 and x2 are different) or when
     // player can be in two different tiles in y axis (y1 and y2 are different). Then compares this to the different bomb range positions.
     if (playerLeftSide === playerRightSide && playerDownSide === playerUpSide) {
-      if ((playerUpSide === bombUp[0] && playerLeftSide === bombUp[1]) || (playerUpSide === bombDown[0] && playerLeftSide === bombDown[1])
-         || (playerUpSide === bombLeft[0] && playerLeftSide === bombLeft[1]) || (playerUpSide === bombRight[0] && playerLeftSide === bombRight[1])) {
+      if (
+        (playerUpSide === bombUp[0] && playerLeftSide === bombUp[1]) ||
+        (playerUpSide === bombDown[0] && playerLeftSide === bombDown[1]) ||
+        (playerUpSide === bombLeft[0] && playerLeftSide === bombLeft[1]) ||
+        (playerUpSide === bombRight[0] && playerLeftSide === bombRight[1])
+      ) {
         return true;
       }
-    } else if ((playerUpSide === bombUp[0] && playerLeftSide === bombUp[1]) || (playerDownSide === bombUp[0] && playerRightSide === bombUp[1])
-    || (playerUpSide === bombDown[0] && playerLeftSide === bombDown[1]) || (playerDownSide === bombDown[0] && playerRightSide === bombDown[1])
-    || (playerUpSide === bombLeft[0] && playerLeftSide === bombLeft[1]) || (playerDownSide === bombLeft[0] && playerRightSide === bombLeft[1])
-    || (playerUpSide === bombRight[0] && playerLeftSide === bombRight[1]) || (playerDownSide === bombRight[0] && playerRightSide === bombRight[1])) {
+    } else if (
+      (playerUpSide === bombUp[0] && playerLeftSide === bombUp[1]) ||
+      (playerDownSide === bombUp[0] && playerRightSide === bombUp[1]) ||
+      (playerUpSide === bombDown[0] && playerLeftSide === bombDown[1]) ||
+      (playerDownSide === bombDown[0] && playerRightSide === bombDown[1]) ||
+      (playerUpSide === bombLeft[0] && playerLeftSide === bombLeft[1]) ||
+      (playerDownSide === bombLeft[0] && playerRightSide === bombLeft[1]) ||
+      (playerUpSide === bombRight[0] && playerLeftSide === bombRight[1]) ||
+      (playerDownSide === bombRight[0] && playerRightSide === bombRight[1])
+    ) {
       return true;
     } else {
       return false;
@@ -112,11 +222,18 @@ class Player {
 
   // This function just defines the 4 player sides (left-right-up-down)
   playerSideBySide() {
-    let playerLeftSide = Math.floor((this.positionX) / this.widthCell + 1 / this.widthCell); // x1
-    let playerRightSide = Math.floor((this.positionX) / this.widthCell + 1 - 1 / this.widthCell); // x2
-    let playerUpSide = Math.floor((this.positionY) / this.widthCell + 1 / this.widthCell); // y1
-    let playerDownSide = Math.floor((this.positionY) / this.widthCell + 1 - 1 / this.widthCell); // y2
+    let playerLeftSide = Math.floor(
+      this.positionX / this.widthCell + 1 / this.widthCell
+    ); // x1
+    let playerRightSide = Math.floor(
+      this.positionX / this.widthCell + 1 - 1 / this.widthCell
+    ); // x2
+    let playerUpSide = Math.floor(
+      this.positionY / this.widthCell + 1 / this.widthCell
+    ); // y1
+    let playerDownSide = Math.floor(
+      this.positionY / this.widthCell + 1 - 1 / this.widthCell
+    ); // y2
     return { playerRightSide, playerLeftSide, playerUpSide, playerDownSide };
   }
-
 }
