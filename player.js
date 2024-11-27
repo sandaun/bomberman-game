@@ -16,8 +16,8 @@ class Player {
     // Sprite del jugador
     this.playerSprite = new Image();
     this.playerSprite.src = 'images/BombermanPlayers.png'; // Ruta del sprite
-    this.playerWidthFrame = 24; // Amplada real del frame del player
-    this.playerHeightFrame = 24; // Alçada real del frame del player
+    this.playerWidthFrame = 18; // Amplada real del frame del player
+    this.playerHeightFrame = 22; // Alçada real del frame del player
     this.playerCurrentFrame = 0; // Frame inicial del player
     this.playerFrameCount = 3; // Frames per direcció
     this.playerSrcX = 4; // Coordenada X inicial del frame del player
@@ -45,40 +45,50 @@ class Player {
 
   getSpriteCoordinates() {
     const frames = {
-      down: [
-        // Moviment cap avall
-        { x: 4, y: 4 }, // Parat
-        { x: 29, y: 4 }, // Moviment 1
-        { x: 54, y: 4 }, // Moviment 2
-      ],
-      left: [
-        // Moviment cap a l'esquerra
-        { x: 79, y: 4 }, // Parat
-        { x: 104, y: 4 }, // Moviment 1
-        { x: 129, y: 4 }, // Moviment 2
-      ],
-      up: [
-        // Moviment cap amunt
-        { x: 154, y: 4 }, // Parat
-        { x: 179, y: 4 }, // Moviment 1
-        { x: 204, y: 4 }, // Moviment 2
-      ],
-      right: [
-        // Moviment cap a la dreta (mirall del moviment esquerra)
-        { x: 79, y: 4 }, // Parat (mirall)
-        { x: 104, y: 4 }, // Moviment 1 (mirall)
-        { x: 129, y: 4 }, // Moviment 2 (mirall)
-      ],
+      down: this.isMoving
+        ? [
+            // Moviment cap avall
+            { x: 30, y: 5 }, // Moviment 1
+            { x: 56, y: 5 }, // Moviment 2
+          ]
+        : [
+            // Parat cap avall
+            { x: 4, y: 5 }, // Parat
+          ],
+      left: this.isMoving
+        ? [
+            // Moviment cap a l'esquerra
+            { x: 107, y: 5 }, // Moviment 1
+            { x: 132, y: 5 }, // Moviment 2
+          ]
+        : [
+            // Parat cap a l'esquerra
+            { x: 83, y: 5 }, // Parat
+          ],
+      up: this.isMoving
+        ? [
+            // Moviment cap amunt
+            { x: 183, y: 5 }, // Moviment 1
+            { x: 208, y: 5 }, // Moviment 2
+          ]
+        : [
+            // Parat cap amunt
+            { x: 157, y: 5 }, // Parat
+          ],
+      right: this.isMoving
+        ? [
+            // Moviment cap a la dreta (mirall del moviment esquerra)
+            { x: 107, y: 5 }, // Moviment 1 (mirall)
+            { x: 132, y: 5 }, // Moviment 2 (mirall)
+          ]
+        : [
+            // Parat cap a la dreta (mirall)
+            { x: 83, y: 5 }, // Parat (mirall)
+          ],
     };
 
     return frames[this.direction];
   }
-
-  // updateBombFrame(ctx, j, i) {
-  //   ctx.clearRect(j, i, this.bombWidthFrame, this.bombHeightFrame);
-  //   this.bombCurrentFrame = ++this.bombCurrentFrame % this.bombFrameCount;
-  //   this.bombSrcX = this.bombCurrentFrame * this.bombWidthFrame;
-  // }
 
   updateBombFrame(ctx, x, y, currentTime) {
     if (!this.lastFrameTime) this.lastFrameTime = currentTime;
@@ -114,12 +124,14 @@ class Player {
     if (currentTime - this.playerLastFrameTime > this.playerFrameInterval) {
       const frames = this.getSpriteCoordinates(); // Obté els frames per la direcció actual
 
-      // Incrementa el frame cíclicament si el player es mou
-      this.playerCurrentFrame = this.isMoving
-        ? (this.playerCurrentFrame + 1) % frames.length
-        : 0; // Manté el primer frame si està parat
+      // Si es mou, alterna entre els frames de moviment
+      if (this.isMoving) {
+        this.playerCurrentFrame = (this.playerCurrentFrame + 1) % frames.length;
+      } else {
+        this.playerCurrentFrame = 0; // Parat, sempre mostra el primer frame
+      }
 
-      // Actualitza les coordenades del frame actual del player
+      // Actualitza les coordenades del frame actual
       const frame = frames[this.playerCurrentFrame];
       this.playerSrcX = frame.x;
       this.playerSrcY = frame.y;
