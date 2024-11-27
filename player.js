@@ -28,17 +28,19 @@ class Player {
 
     // Sprite de la bomba
     this.bombSprite = new Image();
-    this.bombSprite.src = 'images/bombspritev2.png';
-    this.bombSpriteWidth = 150; // Amplada total del sprite de la bomba
-    this.bombSpriteHeight = 48; // Alçada total del sprite de la bomba
-    this.bombRows = 1; // Files al sprite de la bomba
-    this.bombCols = 3; // Columnes al sprite de la bomba
-    this.bombWidthFrame = this.bombSpriteWidth / this.bombCols; // Amplada d'un frame de la bomba
-    this.bombHeightFrame = this.bombSpriteHeight / this.bombRows; // Alçada d'un frame de la bomba
-    this.bombCurrentFrame = 0; // Frame inicial de la bomba
-    this.bombFrameCount = 3; // Nombre de frames de la bomba
-    this.bombSrcX = 0; // Coordenada X inicial del frame de la bomba
-    this.bombSrcY = 0; // Coordenada Y inicial del frame de la bomba
+    this.bombSprite.src = 'images/BombermanBombsExplosions.png'; // Sprite amb moviment i explosions
+    this.bombSpriteWidth = 128; // Amplada total del sprite
+    this.bombSpriteHeight = 64; // Alçada total del sprite
+    this.bombCols = 8; // Columnes
+    this.bombRows = 4; // Files
+    this.bombWidthFrame = 16; // Amplada d'un frame
+    this.bombHeightFrame = 16; // Alçada d'un frame
+    this.bombCurrentFrame = 0; // Frame inicial
+    this.bombFrameStart = 0; // Inici del moviment (0,0)
+    this.bombFrameEnd = 2; // Final del moviment (32,0)
+    this.bombSrcX = 0; // Coordenada X inicial
+    this.bombSrcY = 0; // Coordenada Y inicial (primera fila)
+    this.isExploding = false; // Estat inicial de l'explosió
   }
 
   getSpriteCoordinates() {
@@ -72,10 +74,40 @@ class Player {
     return frames[this.direction];
   }
 
-  updateBombFrame(ctx, j, i) {
-    ctx.clearRect(j, i, this.bombWidthFrame, this.bombHeightFrame);
-    this.bombCurrentFrame = ++this.bombCurrentFrame % this.bombFrameCount;
-    this.bombSrcX = this.bombCurrentFrame * this.bombWidthFrame;
+  // updateBombFrame(ctx, j, i) {
+  //   ctx.clearRect(j, i, this.bombWidthFrame, this.bombHeightFrame);
+  //   this.bombCurrentFrame = ++this.bombCurrentFrame % this.bombFrameCount;
+  //   this.bombSrcX = this.bombCurrentFrame * this.bombWidthFrame;
+  // }
+
+  updateBombFrame(ctx, x, y, currentTime) {
+    if (!this.lastFrameTime) this.lastFrameTime = currentTime;
+
+    // Comprova si ha passat prou temps per canviar de frame
+    if (currentTime - this.lastFrameTime > 150) {
+      if (!this.isExploding) {
+        // Actualitza els frames de moviment de la bomba
+        this.bombCurrentFrame =
+          (this.bombCurrentFrame + 1) % (this.bombFrameEnd + 1);
+        this.bombSrcX = this.bombCurrentFrame * this.bombWidthFrame;
+        this.bombSrcY = 0; // Primera fila
+      }
+
+      this.lastFrameTime = currentTime; // Actualitza el temps de l'últim canvi de frame
+    }
+
+    // Dibuixa la bomba al canvas
+    ctx.drawImage(
+      this.bombSprite,
+      this.bombSrcX,
+      this.bombSrcY,
+      this.bombWidthFrame,
+      this.bombHeightFrame,
+      x,
+      y,
+      this.widthCell, // Escala a 50x50
+      this.widthCell
+    );
   }
 
   updatePlayerFrame(currentTime) {

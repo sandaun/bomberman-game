@@ -16,7 +16,6 @@ class Game {
     this.createEnemies();
     this.bombSpriteGridJ = 0;
     this.bombSpriteGridI = 0;
-    this.bombSpriteInterval();
   }
 
   // --------------- DRAW BOARD FUNCTIONS ----------------
@@ -74,34 +73,14 @@ class Game {
         if (this.grid.gameGrid[i][j] === this.grid.gridElements.bomb) {
           this.bombSpriteGridJ = j;
           this.bombSpriteGridI = i;
-          this.ctx.drawImage(
-            this.player.bombSprite,
-            this.player.bombSrcX,
-            this.player.bombSrcY,
-            this.player.bombWidthFrame,
-            this.player.bombHeightFrame,
+          this.player.updateBombFrame(
+            this.ctx,
             j * this.widthCell,
-            i * this.widthCell,
-            this.player.bombWidthFrame,
-            this.player.bombHeightFrame
+            i * this.widthCell
           );
-          // this.ctx.drawImage(bomb, j * this.widthCell, i * this.widthCell, this.widthCell, this.widthCell);
         }
       }
     }
-  }
-
-  bombSpriteInterval() {
-    this.bombInterval = setInterval(
-      function () {
-        this.player.updateBombFrame(
-          this.ctx,
-          this.bombSpriteGridJ * this.widthCell,
-          this.bombSpriteGridI * this.widthCell
-        );
-      }.bind(this),
-      150
-    );
   }
 
   // ----------------- CHECK COLLISIONS ------------------
@@ -354,7 +333,6 @@ class Game {
       });
 
       clearInterval(this.createEnemiesInterval);
-      clearInterval(this.bombInterval);
       window.cancelAnimationFrame(this.intervalGame);
       this.intervalGame = undefined;
     } else {
@@ -364,7 +342,6 @@ class Game {
       });
 
       this.startCreatingEnemies();
-      this.bombSpriteInterval();
       this.intervalGame = window.requestAnimationFrame(this.update.bind(this));
     }
   }
@@ -389,6 +366,19 @@ class Game {
       enemy.updateFrame(currentTime); // Actualitza el frame de l'enemic
       enemy.drawEnemy(this.ctx); // Dibuixa l'enemic
     });
+
+    // Dibuixa i actualitza el moviment de la bomba
+    if (
+      this.grid.gameGrid[this.bombSpriteGridI]?.[this.bombSpriteGridJ] ===
+      this.grid.gridElements.bomb
+    ) {
+      this.player.updateBombFrame(
+        this.ctx,
+        this.bombSpriteGridJ * this.widthCell,
+        this.bombSpriteGridI * this.widthCell,
+        currentTime
+      );
+    }
 
     this.addScore(); // Actualitza el marcador
     this.startMoveEnemies(); // Inicia el moviment dels enemics
