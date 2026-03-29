@@ -1,391 +1,305 @@
-class Game {
-  constructor(options) {
-    this.player = new Player(options.columns, options.rows, options.widthCell);
-    this.grid = new Grid(options.columns, options.rows, options.widthCell);
-    this.enemy = new Enemy(options.columns, options.rows, options.widthCell);
+class GameController {
+  constructor(config) {
+    this.canvas = config.canvas;
+    this.ctx = config.ctx;
+    this.columns = config.columns;
+    this.rows = config.rows;
+    this.cellSize = config.cellSize;
+    this.assetStore = config.assetStore;
+    this.hud = config.hud;
+    this.input = config.input;
+
+    this.renderer = new Renderer({
+      ctx: this.ctx,
+      assetStore: this.assetStore,
+      cellSize: this.cellSize,
+      columns: this.columns,
+      rows: this.rows,
+    });
+
+    this.player = new PlayerController({ cellSize: this.cellSize });
+    this.bombSystem = new BombSystem();
     this.enemies = [];
-    this.fixObstacle = undefined; // Not used at the moment, maybe in Grid class
-    this.rows = options.rows;
-    this.columns = options.columns;
-    this.widthCell = options.widthCell;
-    this.ctx = options.ctx;
-    this.intervalGame = undefined;
-    this.points = 0;
-    this.quantityEnemies = 2;
-    this.gameBegins = true;
-    this.createEnemies();
-    this.bombSpriteGridJ = 0;
-    this.bombSpriteGridI = 0;
+    this.level = null;
+    this.levelNumber = 1;
+    this.score = 0;
+    this.state = GAME_STATES.START;
+    this.lastFrameTime = 0;
+    this.animationFrameId = null;
+
+    this.input.onPlaceBomb = () => this.placeBomb();
+    this.input.onPause = () => this.togglePause();
+    this.loop = this.loop.bind(this);
   }
 
-  // --------------- DRAW BOARD FUNCTIONS ----------------
-  drawBoard() {
-    this.ctx.fillStyle = '#41ae41';
-    this.ctx.fillRect(
-      0,
-      0,
-      this.columns * this.widthCell,
-      this.rows * this.widthCell
-    );
+  boot() {
+    this.input.attach();
+    this.hud.showStartScreen();
+    this.renderFrame(performance.now());
   }
 
-  drawBoardElements() {
-    let brick = new Image();
-    brick.src = 'images/brick.png';
-    let brickbreak = new Image();
-    brickbreak.src = 'images/brickbreak.png';
-    let bomb = new Image();
-    bomb.src = 'images/bombV2.png';
-    let door = new Image();
-    door.src = 'images/door.png';
-
-    for (let i = 0; i < this.grid.gameGrid.length; i++) {
-      for (let j = 0; j < this.grid.gameGrid[i].length; j++) {
-        if (this.grid.gameGrid[i][j] === this.grid.gridElements.brick) {
-          this.ctx.drawImage(
-            brick,
-            j * this.widthCell,
-            i * this.widthCell,
-            this.widthCell,
-            this.widthCell
-          );
-        }
-        if (this.grid.gameGrid[i][j] === this.grid.gridElements.key) {
-          this.ctx.drawImage(
-            door,
-            j * this.widthCell,
-            i * this.widthCell,
-            this.widthCell,
-            this.widthCell
-          );
-        }
-        if (
-          this.grid.gameGrid[i][j] === this.grid.gridElements.breakableBrick
-        ) {
-          this.ctx.drawImage(
-            brickbreak,
-            j * this.widthCell,
-            i * this.widthCell,
-            this.widthCell,
-            this.widthCell
-          );
-        }
-        if (this.grid.gameGrid[i][j] === this.grid.gridElements.bomb) {
-          this.bombSpriteGridJ = j;
-          this.bombSpriteGridI = i;
-          this.player.updateBombFrame(
-            this.ctx,
-            j * this.widthCell,
-            i * this.widthCell
-          );
-        }
-      }
-    }
+  startNewGame() {
+    this.score = 0;
+    this.levelNumber = 1;
+    this.player.resetForNewGame();
+    this.startLevel();
+    this.hud.showGameScreen();
   }
 
-  // ----------------- CHECK COLLISIONS ------------------
-  checkCollision(x, y) {
-    let x1 = Math.floor(x + 1 / this.widthCell),
-      y1 = Math.floor(y + 1 / this.widthCell),
-      x2 = Math.floor(x + 1 - 1 / this.widthCell),
-      y2 = Math.floor(y + 1 - 1 / this.widthCell);
-
-    if (this.checkTileContent(y1, x1, y2, x2, this.grid.gridElements.key)) {
-      // You win on this case!
-      this.pause();
-      this.onWinGame();
-    } else if (
-      this.checkTileContent(y1, x1, y2, x2, this.grid.gridElements.empty)
-    ) {
-      return true; // Collision
-    }
-    return false;
+  restartRun() {
+    this.score = 0;
+    this.levelNumber = 1;
+    this.player.resetForNewGame();
+    this.startLevel();
   }
 
-  checkTileContent(y1, x1, y2, x2, content) {
-    if (content === this.grid.gridElements.empty) {
-      return (
-        this.grid.gameGrid[y1][x1] !== content ||
-        this.grid.gameGrid[y2][x1] !== content ||
-        this.grid.gameGrid[y1][x2] !== content ||
-        this.grid.gameGrid[y2][x2] !== content
+  nextLevel() {
+    this.levelNumber += 1;
+    this.startLevel();
+  }
+
+  startLevel() {
+    this.level = new LevelState({
+      columns: this.columns,
+      rows: this.rows,
+      levelNumber: this.levelNumber,
+    });
+
+    this.player.prepareForLevel({ row: 1, col: 1 });
+    this.bombSystem.reset();
+    this.enemies = this.level
+      .getEnemySpawnTiles(Math.min(2 + this.levelNumber - 1, 6))
+      .map(
+        (spawnTile) =>
+          new EnemyController({
+            spawnTile,
+            cellSize: this.cellSize,
+            levelNumber: this.levelNumber,
+            baseSpeed: 165,
+          })
       );
-    }
-    return (
-      this.grid.gameGrid[y1][x1] === content ||
-      this.grid.gameGrid[y2][x1] === content ||
-      this.grid.gameGrid[y1][x2] === content ||
-      this.grid.gameGrid[y2][x2] === content
-    );
-  }
 
-  assignControlsToKeys() {
-    let isShiftPressed = false; // Estat de Shift
+    this.state = GAME_STATES.PLAYING;
+    this.lastFrameTime = performance.now();
+    this.input.clear();
+    this.hud.hideOverlay();
 
-    document.onkeydown = (e) => {
-      if (e.keyCode === 16) {
-        // Shift
-        isShiftPressed = true;
-        return;
-      }
-
-      switch (e.keyCode) {
-        case 87: // W
-        case 38: // Fletxa amunt
-          this.handleDirectionChange('up', isShiftPressed);
-          break;
-        case 83: // S
-        case 40: // Fletxa avall
-          this.handleDirectionChange('down', isShiftPressed);
-          break;
-        case 65: // A
-        case 37: // Fletxa esquerra
-          this.handleDirectionChange('left', isShiftPressed);
-          break;
-        case 68: // D
-        case 39: // Fletxa dreta
-          this.handleDirectionChange('right', isShiftPressed);
-          break;
-        case 32: // Barra espaiadora
-          this.throwTheBomb(); // Llança la bomba
-          break;
-        case 80: // P per pausar
-          this.pause();
-          break;
-      }
-    };
-
-    document.onkeyup = (e) => {
-      if (e.keyCode === 16) {
-        // Shift
-        isShiftPressed = false;
-      }
-
-      if ([87, 38, 83, 40, 65, 37, 68, 39].includes(e.keyCode)) {
-        this.player.isMoving = false; // Atura el moviment si no premem cap altra tecla
-      }
-    };
-  }
-
-  handleDirectionChange(direction, isShiftPressed) {
-    this.player.direction = direction; // Actualitza la direcció del jugador
-
-    if (!isShiftPressed) {
-      // Només mou el jugador si Shift no està premut
-      this.player.isMoving = true;
-
-      if (!this.checkCollisionInDirection(direction)) {
-        this.player.moveDirection();
-      }
+    if (!this.animationFrameId) {
+      this.animationFrameId = window.requestAnimationFrame(this.loop);
     }
   }
 
-  checkCollisionInDirection(direction) {
-    switch (direction) {
-      case 'up':
-        return this.checkCollision(
-          this.player.positionX / this.widthCell,
-          (this.player.positionY - 10) / this.widthCell
-        );
-      case 'down':
-        return this.checkCollision(
-          this.player.positionX / this.widthCell,
-          (this.player.positionY + 10) / this.widthCell
-        );
-      case 'left':
-        return this.checkCollision(
-          (this.player.positionX - 10) / this.widthCell,
-          this.player.positionY / this.widthCell
-        );
-      case 'right':
-        return this.checkCollision(
-          (this.player.positionX + 10) / this.widthCell,
-          this.player.positionY / this.widthCell
-        );
+  togglePause() {
+    if (this.state === GAME_STATES.START) {
+      return;
     }
-  }
 
-  // ----------------------------- THROWING THE BOMB FUNCTIONS ----------------------------------
-  throwTheBomb() {
-    let bombGridPosition = this.player.throwBomb();
-    let buildBomb = this.grid.buildBomb(bombGridPosition);
-    if (buildBomb === true) {
-      let timeoutId = setTimeout(
-        function () {
-          this.grid.destroyElements(bombGridPosition, this.player.bombRange);
-          this.isPlayerHit(bombGridPosition);
-          this.isEnemyHit(bombGridPosition);
-        }.bind(this),
-        3000
-      );
-    }
-  }
-
-  isPlayerHit(bombGridPosition) {
-    if (this.player.bombVsPlayerPosition(bombGridPosition)) {
-      let timeoutId = setTimeout(
-        function () {
-          // This timeout is to give the bomb time to destroy the elements before stopping the game.
-          this.pause();
-          this.onGameOver();
-        }.bind(this),
-        500
-      );
-      return true;
-    }
-  }
-
-  isEnemyHit(bombGridPosition) {
-    this.enemies.forEach((enemy, index) => {
-      if (enemy.bombVsEnemyPosition(bombGridPosition)) {
-        this.points += 1000;
-        this.enemies.splice(index, 1);
-      }
-    });
-  }
-
-  // ------------------------------ ENEMY FUNCTIONS ----------------------------------
-  drawEnemy() {
-    this.enemies.forEach((enemy) => {
-      enemy.drawEnemy(this.ctx);
-    });
-  }
-
-  // COLLISION BETWEEN PLAYER AND ENEMY
-  enemyMeetPlayer() {
-    this.enemies.forEach((enemy) => {
-      let playerLeft = this.player.positionX;
-      let playerRight = this.player.positionX + this.widthCell;
-      let playerUp = this.player.positionY;
-      let playerDown = this.player.positionY + this.widthCell;
-      let enemyLeft = enemy.positionX;
-      let enemyRight = enemy.positionX + this.widthCell;
-      let enemyUp = enemy.positionY;
-      let enemyDown = enemy.positionY + this.widthCell;
-
-      if (
-        playerRight > enemyLeft &&
-        playerLeft < enemyRight &&
-        playerDown > enemyUp &&
-        playerUp < enemyDown
-      ) {
-        this.player.playerIsHit = true;
-      }
-    });
-    return this.player.playerIsHit;
-  }
-
-  createEnemies() {
-    if (this.gameBegins === true) {
-      for (let i = 0; i < this.quantityEnemies; i++) {
-        this.enemies.push(new Enemy(this.columns, this.rows, this.widthCell));
-      }
-      this.gameBegins = false;
-    } else {
-      this.enemies.push(new Enemy(this.columns, this.rows, this.widthCell));
-    }
-  }
-
-  startCreatingEnemies() {
-    this.createEnemiesInterval = setInterval(
-      this.createEnemies.bind(this),
-      30000
-    );
-  }
-
-  startMoveEnemies() {
-    this.enemies.forEach((enemy) => {
-      enemy.move(this.grid);
-    });
-  }
-
-  // ------------------------ POINTS -------------------------
-  addScore() {
-    let bomberScore = document.getElementById('points');
-    let totalPoints = this.points + this.grid.points;
-    bomberScore.innerHTML = totalPoints;
-    return bomberScore;
-  }
-
-  // ----------------- INITIALIZING GAME AND UPDATING CANVAS ------------------
-
-  start() {
-    this.assignControlsToKeys();
-    this.startCreatingEnemies();
-    this.update();
-    this.intervalGame = window.requestAnimationFrame(this.update.bind(this));
-  }
-
-  clear() {
-    this.ctx.clearRect(
-      0,
-      0,
-      this.columns * this.widthCell,
-      this.rows * this.widthCell
-    );
-  }
-
-  pause() {
-    if (this.intervalGame) {
-      // Pausa el moviment i l'animació de tots els enemics
-      this.enemies.forEach((enemy) => {
-        enemy.stop();
+    if (this.state === GAME_STATES.PLAYING) {
+      this.state = GAME_STATES.PAUSED;
+      this.hud.showOverlay({
+        title: 'Paused',
+        message: 'Catch your breath, then jump back into the maze.',
+        primaryLabel: 'Resume',
+        onPrimary: () => {
+          this.state = GAME_STATES.PLAYING;
+          this.hud.hideOverlay();
+        },
+        secondaryLabel: 'Restart run',
+        onSecondary: () => this.restartRun(),
       });
+      return;
+    }
 
-      clearInterval(this.createEnemiesInterval);
-      window.cancelAnimationFrame(this.intervalGame);
-      this.intervalGame = undefined;
-    } else {
-      // Reinicia el moviment i l'animació de tots els enemics
-      this.enemies.forEach((enemy) => {
-        enemy.start(this.grid, this.ctx);
-      });
-
-      this.startCreatingEnemies();
-      this.intervalGame = window.requestAnimationFrame(this.update.bind(this));
+    if (this.state === GAME_STATES.PAUSED) {
+      this.state = GAME_STATES.PLAYING;
+      this.hud.hideOverlay();
     }
   }
 
-  update(currentTime) {
-    this.clear(); // Neteja tot el canvas
-    this.drawBoard(); // Dibuixa el fons verd
-    this.drawBoardElements(); // Dibuixa els blocs, bombes i altres elements
-
-    // Actualitzar i dibuixar el player
-    this.player.updatePlayerFrame(currentTime); // Actualitza l'animació del player
-    if (!this.enemyMeetPlayer()) {
-      this.player.drawPlayer(this.ctx); // Dibuixa el player si no ha col·lisionat amb enemics
-    } else {
-      this.pause(); // Pausa el joc si el player és atrapat
-      this.onGameOver(); // Mostra la pantalla de Game Over
-      return; // Finalitza l'actualització per evitar dibuixar més
+  placeBomb() {
+    if (this.state !== GAME_STATES.PLAYING) {
+      return;
     }
 
-    // Actualitzar i dibuixar enemics
-    this.enemies.forEach((enemy) => {
-      enemy.updateFrame(currentTime); // Actualitza el frame de l'enemic
-      enemy.drawEnemy(this.ctx); // Dibuixa l'enemic
+    this.bombSystem.placeBomb(this.player);
+  }
+
+  loop(timestamp) {
+    const deltaTime = Math.min((timestamp - this.lastFrameTime) / 1000, 0.05);
+    this.lastFrameTime = timestamp;
+
+    if (this.state === GAME_STATES.PLAYING) {
+      this.update(deltaTime);
+    }
+
+    this.renderFrame(timestamp);
+    this.animationFrameId = window.requestAnimationFrame(this.loop);
+  }
+
+  update(deltaTime) {
+    const directionIntent = this.input.getDirectionIntent();
+    if (directionIntent) {
+      this.player.tryMove(directionIntent, this.level, this.bombSystem);
+    }
+
+    this.player.update(deltaTime);
+    this.enemies.forEach((enemy) => enemy.update(deltaTime, this.level, this.bombSystem));
+
+    const events = this.bombSystem.update(deltaTime, this.level, this.player, this.enemies);
+    this.handleBombEvents(events);
+    this.handleCollectibles();
+    this.resolveEnemyContact();
+    this.cleanupEnemies();
+    this.tryOpenDoor();
+    this.checkWinCondition();
+  }
+
+  handleBombEvents(events) {
+    events.forEach((event) => {
+      if (event.type === 'breakable-destroyed') {
+        this.score += 100;
+      }
+
+      if (event.type === 'enemy-hit') {
+        this.score += 500;
+      }
+
+      if (event.type === 'player-hit') {
+        this.handlePlayerDeath();
+      }
+    });
+  }
+
+  handleCollectibles() {
+    const collected = this.level.collectPowerup(
+      this.player.gridPosition.row,
+      this.player.gridPosition.col
+    );
+
+    if (collected === HIDDEN_CONTENT.POWERUP_BOMB) {
+      this.player.addBombCapacity();
+      this.score += 250;
+    }
+
+    if (collected === HIDDEN_CONTENT.POWERUP_RANGE) {
+      this.player.addRange();
+      this.score += 250;
+    }
+  }
+
+  resolveEnemyContact() {
+    const enemyCollision = this.enemies.some(
+      (enemy) =>
+        (enemy.state === ENTITY_STATES.IDLE ||
+          enemy.state === ENTITY_STATES.WALKING) &&
+        enemy.gridPosition.row === this.player.gridPosition.row &&
+        enemy.gridPosition.col === this.player.gridPosition.col
+    );
+
+    if (enemyCollision) {
+      this.handlePlayerDeath();
+    }
+  }
+
+  cleanupEnemies() {
+    this.enemies = this.enemies.filter((enemy) => enemy.state !== ENTITY_STATES.DEAD);
+  }
+
+  tryOpenDoor() {
+    if (!this.enemies.length) {
+      this.level.openDoor();
+    }
+  }
+
+  checkWinCondition() {
+    const tile = this.level.getTile(
+      this.player.gridPosition.row,
+      this.player.gridPosition.col
+    );
+
+    if (!tile || tile.type !== TILE_TYPES.DOOR_OPEN) {
+      return;
+    }
+
+    this.state = GAME_STATES.WON;
+    this.score += 1000;
+    this.hud.showOverlay({
+      title: `Level ${this.levelNumber} Clear`,
+      message: 'The exit is open. Push deeper and let the maze hit harder.',
+      primaryLabel: 'Next level',
+      onPrimary: () => this.nextLevel(),
+      secondaryLabel: 'Restart run',
+      onSecondary: () => this.restartRun(),
+    });
+  }
+
+  handlePlayerDeath() {
+    if (this.state !== GAME_STATES.PLAYING || !this.player.canAct()) {
+      return;
+    }
+
+    this.player.kill();
+    this.state = GAME_STATES.LOST;
+    this.hud.showOverlay({
+      title: 'You were caught',
+      message: 'Bombs, enemies, and tighter lanes are all active now. One more try?',
+      primaryLabel: 'Restart run',
+      onPrimary: () => this.restartRun(),
+      secondaryLabel: 'Back to title',
+      onSecondary: () => {
+        this.state = GAME_STATES.START;
+        this.input.clear();
+        this.hud.showStartScreen();
+      },
+    });
+  }
+
+  renderFrame(timestamp) {
+    if (!this.level) {
+      this.ctx.fillStyle = '#102027';
+      this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+      return;
+    }
+
+    this.renderer.render({
+      level: this.level,
+      player: this.player,
+      enemies: this.enemies,
+      bombSystem: this.bombSystem,
+      time: timestamp,
     });
 
-    // Dibuixa i actualitza el moviment de la bomba
-    if (
-      this.grid.gameGrid[this.bombSpriteGridI]?.[this.bombSpriteGridJ] ===
-      this.grid.gridElements.bomb
-    ) {
-      this.player.updateBombFrame(
-        this.ctx,
-        this.bombSpriteGridJ * this.widthCell,
-        this.bombSpriteGridI * this.widthCell,
-        currentTime
-      );
+    this.hud.update({
+      score: this.score,
+      level: this.levelNumber,
+      bombsPlaced: this.player.activeBombs,
+      maxBombs: this.player.maxBombs,
+      range: this.player.bombRange,
+      enemies: this.enemies.length,
+      status: this.getStatusLabel(),
+      state: this.state,
+    });
+  }
+
+  getStatusLabel() {
+    if (this.state === GAME_STATES.PAUSED) {
+      return 'Paused';
     }
 
-    this.addScore(); // Actualitza el marcador
-    this.startMoveEnemies(); // Inicia el moviment dels enemics
-
-    // Continuar amb el cicle de joc
-    if (this.intervalGame !== undefined) {
-      this.intervalGame = window.requestAnimationFrame(this.update.bind(this));
+    if (this.state === GAME_STATES.WON) {
+      return 'Exit reached';
     }
+
+    if (this.state === GAME_STATES.LOST) {
+      return 'Run over';
+    }
+
+    if (!this.enemies.length) {
+      return this.level.doorOpen ? 'Exit open' : 'Find the hidden door';
+    }
+
+    return 'Clear enemies and break crates';
   }
 }
+
+window.GameController = GameController;

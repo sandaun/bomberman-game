@@ -1,49 +1,97 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="styles/styles.css">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <style>@import url('https://fonts.googleapis.com/css?family=Press+Start+2P');</style>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <link rel="stylesheet" href="styles/styles.css" />
+    <style>
+      @import url('https://fonts.googleapis.com/css?family=Press+Start+2P');
+    </style>
     <title>Bomberman - by Oriol Carbó</title>
-</head>
-<body class="container">
-    <section id="begin" style="display: block">
-        <div><img src="images/bombermanTitle.png" alt="" width="40%"></div>
-        <button class="startbutton" id="playMe"><span>Start Game!</span></button>
-    </section>
-    <section class="canvas" id="canvas" style="display: none">
-        <canvas id="bomberman" width="750" height="650" style="display: none"></canvas>
-        <div>
-            <img src="images/bombermanTitle.png" alt="" width="85%">
-            <h3 id="points-text">Score:</h3>
-            <h3 id="points">0</h3>
-            <h3 class="instructions instmargin">Keys:</h3>
-            <h2 class="instructions">&#8679; - Up</h2>
-            <h2 class="instructions">&#8681; - Down</h2>
-            <h2 class="instructions">&#8678; - Left</h2>
-            <h2 class="instructions">&#8680; - Right</h2>
-            <h2 class="instructions">Space - Bomb!</h2>
-            <h2 class="instructions">W - Look Up</h2>
-            <h2 class="instructions">S - Look Down</h2>
-            <h2 class="instructions">A - Look Left</h2>
-            <h2 class="instructions">D - Look Right</h2>
-            <h2 class="instructions">P - Pause Game</h2>
+  </head>
+  <body class="app-shell">
+    <main class="layout">
+      <section class="hero-screen" id="startScreen">
+        <img
+          class="hero-screen__logo"
+          src="images/bombermanTitle.png"
+          alt="Bomberman title"
+        />
+        <p class="hero-screen__copy">
+          Break crates, reveal the exit, grab upgrades, and clear the maze one
+          level at a time.
+        </p>
+        <button class="button button--primary" id="startButton">Start run</button>
+        <div class="hero-screen__tips">
+          <span>Move: Arrows or WASD</span>
+          <span>Bomb: Space</span>
+          <span>Pause: P</span>
         </div>
-    </section>
-    <section class="gameover" id="gameover" style="display: none">
-        <h2 class="gameover-text">Game Over</h2>
-        <button class="playagain-button" id="playAgain"><span>Play Again!</span></button>
-    </section>
-    <section class="gameover" id="youwin" style="display: none">
-        <h2 class="gameover-text">You Win!</h2>
-        <button class="playagain-button" id="playAgainwin"><span>Play Again!</span></button>
-    </section>
-    <script type="text/javascript" src="game.js"></script>
-    <script type="text/javascript" src="grid.js"></script>
-    <script type="text/javascript" src="enemy.js"></script>
-    <script type="text/javascript" src="player.js"></script>
-    <script type="text/javascript" src="main.js"></script>
-</body>
+      </section>
+
+      <section class="game-screen" id="gameScreen" hidden>
+        <header class="hud">
+          <div class="hud__cluster">
+            <article class="hud-chip">
+              <span class="hud-chip__label">Score</span>
+              <strong id="hudScore">0</strong>
+            </article>
+            <article class="hud-chip">
+              <span class="hud-chip__label">Level</span>
+              <strong id="hudLevel">1</strong>
+            </article>
+            <article class="hud-chip">
+              <span class="hud-chip__label">Bombs</span>
+              <strong id="hudBombs">0/1</strong>
+            </article>
+            <article class="hud-chip">
+              <span class="hud-chip__label">Fire</span>
+              <strong id="hudRange">1</strong>
+            </article>
+            <article class="hud-chip">
+              <span class="hud-chip__label">Enemies</span>
+              <strong id="hudEnemies">0</strong>
+            </article>
+          </div>
+          <div class="hud__actions">
+            <span class="hud-status" id="hudStatus">Ready</span>
+            <button class="button button--secondary" id="pauseButton">Pause</button>
+          </div>
+        </header>
+
+        <section class="board-wrap">
+          <p class="board-caption">
+            Clear enemies, break crates, reveal the exit.
+          </p>
+          <canvas id="bomberman" width="750" height="650"></canvas>
+          <div class="overlay" id="overlay" hidden>
+            <div class="overlay__panel">
+              <h2 id="overlayTitle">Paused</h2>
+              <p id="overlayMessage"></p>
+              <div class="overlay__actions">
+                <button class="button button--primary" id="overlayPrimary">
+                  Continue
+                </button>
+                <button class="button button--secondary" id="overlaySecondary">
+                  Restart
+                </button>
+              </div>
+            </div>
+          </div>
+        </section>
+      </section>
+    </main>
+
+    <script src="assets.js"></script>
+    <script src="level-state.js"></script>
+    <script src="player.js"></script>
+    <script src="enemy.js"></script>
+    <script src="bomb-system.js"></script>
+    <script src="input-manager.js"></script>
+    <script src="hud-controller.js"></script>
+    <script src="renderer.js"></script>
+    <script src="game.js"></script>
+    <script src="main.js"></script>
+  </body>
 </html>

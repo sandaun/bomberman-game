@@ -1,49 +1,46 @@
-document.onload = function() {
-  const playButton = document.getElementById('playMe');
+window.addEventListener('DOMContentLoaded', async () => {
   const canvas = document.getElementById('bomberman');
-  const playAgainButton = document.getElementById('playAgain');
-  const playAgainWinButton = document.getElementById('playAgainwin');
   const ctx = canvas.getContext('2d');
-  const widthCell = 50;
+  const assetStore = new AssetStore(ASSET_MANIFEST);
 
-  const game = new Game({
-    widthCell: widthCell,
-    columns: canvas.width / widthCell,
-    rows: canvas.height / widthCell,
-    // player: new Player(canvas.width / widthCell, canvas.height / widthCell),
-    ctx: ctx
+  await assetStore.loadAll();
+
+  const hud = new HudController({
+    startScreen: document.getElementById('startScreen'),
+    gameScreen: document.getElementById('gameScreen'),
+    scoreValue: document.getElementById('hudScore'),
+    levelValue: document.getElementById('hudLevel'),
+    bombsValue: document.getElementById('hudBombs'),
+    rangeValue: document.getElementById('hudRange'),
+    enemiesValue: document.getElementById('hudEnemies'),
+    statusValue: document.getElementById('hudStatus'),
+    pauseButton: document.getElementById('pauseButton'),
+    overlay: document.getElementById('overlay'),
+    overlayTitle: document.getElementById('overlayTitle'),
+    overlayMessage: document.getElementById('overlayMessage'),
+    overlayPrimary: document.getElementById('overlayPrimary'),
+    overlaySecondary: document.getElementById('overlaySecondary'),
   });
 
-  // canvas.style = 'display: block'; // DELETE WHEN GAME IS READY AND UNCOMMENT LINES BELOW: PLAYBUTTON.ONCLICK
-  // begin.style = 'display: none';
+  const input = new InputManager();
+  const game = new GameController({
+    canvas,
+    ctx,
+    columns: canvas.width / 50,
+    rows: canvas.height / 50,
+    cellSize: 50,
+    assetStore,
+    hud,
+    input,
+  });
 
-  playButton.onclick = function () {
-    const begin = document.getElementById('begin');
-    const canvasSection = document.getElementById('canvas');
-    canvas.style = 'display: block';
-    canvasSection.style = 'display: flex';
-    begin.style = 'display: none';
-    game.start();
-  };
+  document.getElementById('startButton').addEventListener('click', () => {
+    game.startNewGame();
+  });
 
-  game.onGameOver = () => {
-    const gameOver = document.getElementById('gameover');
-    gameOver.style = 'display: block';
-    gameOver.style = 'position: absolute';
-  }
+  document.getElementById('pauseButton').addEventListener('click', () => {
+    game.togglePause();
+  });
 
-  game.onWinGame = () => {
-    const youWin = document.getElementById('youwin');
-    youWin.style = 'display: block';
-    youWin.style = 'position: absolute';
-  }
-
-  playAgainButton.onclick = function () {
-    location.reload(true);
-  };
-
-  playAgainWinButton.onclick = function () {
-    location.reload(true);
-  };
-
-}();
+  game.boot();
+});
