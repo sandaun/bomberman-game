@@ -274,9 +274,20 @@ class Renderer {
   }
 
   getExplosionFrame(segment, phase) {
-    const bodyFrame = phase < 0.35 ? { x: 16, y: 32 } : { x: 32, y: 32 };
+    const bodyFrame = phase < 0.35 ? { x: 80, y: 48 } : { x: 96, y: 48 };
     const tipFrame = phase < 0.35 ? { x: 0, y: 32 } : { x: 48, y: 32 };
-    const centerFrame = phase < 0.3 ? { x: 48, y: 16 } : { x: 48, y: 0 };
+    const centerFrames = [
+      { x: 48, y: 0 },
+      { x: 0, y: 16 },
+      { x: 16, y: 16 },
+      { x: 32, y: 16 },
+      { x: 48, y: 16 },
+    ];
+    const centerIndex = Math.min(
+      centerFrames.length - 1,
+      Math.max(0, Math.floor(phase * centerFrames.length))
+    );
+    const centerFrame = centerFrames[centerIndex];
 
     switch (segment) {
       case 'center':
