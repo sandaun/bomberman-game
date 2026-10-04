@@ -76,13 +76,13 @@ test('enemy reward uses its visible position and cannot repeat on lingering flam
   game.enemies = [enemy];
   game.bombSystem.explosions = [{ tiles: [{ row: 1, col: 2 }], timer: 0.45, duration: 0.45 }];
   game.handleBombEvents(game.bombSystem.update(0.01, game.level, game.player, game.enemies));
-  assert.equal(game.score, 500);
+  assert.equal(game.score, 100);
   assert.equal(enemy.state, 'dying');
   assert.equal(game.feedback[0].x, 85);
   enemy.renderPosition.x = 90;
   assert.equal(game.feedback[0].x, 85);
   game.handleBombEvents(game.bombSystem.update(0.01, game.level, game.player, game.enemies));
-  assert.equal(game.score, 500);
+  assert.equal(game.score, 100);
   enemy.update(0.45, game.level, game.bombSystem);
   game.cleanupEnemies();
   assert.equal(game.enemies.length, 0);

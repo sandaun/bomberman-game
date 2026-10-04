@@ -123,11 +123,8 @@ The user authorized sounds, enemies, level tuning, and tests on 2026-09-30.
 - Audio starts after a user gesture. The HUD sound button mutes/unmutes effects;
   pause and level/restart transitions cancel active and scheduled sounds.
 - Audio is optional and needs no dependency or downloaded audio assets.
-- From level 3, one balloon is a pursuer, identified by a small blue marker.
-  Within six tiles it has a 65% chance to choose a legal direction that brings
-  it closer to the player; otherwise it keeps the existing wandering behavior.
-  It obeys walls/crates/bombs and has no knowledge of hidden tiles.
-- Other balloons continue wandering. Existing speed and death sprites stay intact.
+- The initial blue-marked balloon pursuer has been replaced by the classic
+  species implementation described below.
 - Enemy count now increases every two levels: 2 at levels 1–2, 3 at 3–4,
   4 at 5–6, 5 at 7–8, and 6 from level 9 onward.
 - Eight walkable starting tiles around the first pillar remain crate-free,
@@ -178,6 +175,38 @@ The user approved the sample board and its integration on 2026-10-04.
 - Collection rules, capacity, blast radius, and pickup feedback are unchanged.
 - All 36 current tests pass; visual review is left to the user as requested.
 
+## Classic Enemy Species
+
+Implemented on 2026-10-04 at the user's request.
+
+- Eight species: Ballom, Onil, Dahl, Minvo, Kondoria, Ovapi, Pass, Pontan.
+- `enemy.js` defines species behavior, points, speeds, and level lineups.
+- Ballom and Dahl wander; Onil, Minvo, and Ovapi pursue nearby players.
+- Kondoria uses route pursuit within eight tiles; Pass and Pontan pursue
+  across the board using breadth-first search through legal tiles.
+- Kondoria, Ovapi, and Pontan cross destructible crates. Every species
+  respects solid walls, board boundaries, and bombs.
+- Destruction of an occupied crate can kill a wall-passing enemy.
+- Speeds are fixed per species: 165, 190, 190, 225, 90, 145, 240, 260 px/s
+  in the species order above. Enemy movement carries time across tile
+  boundaries so speed does not depend on frame rate.
+- Defeat scores are 100, 200, 400, 800, 1000, 2000, 4000, 8000, respectively.
+  Score feedback uses the defeated species' value instead of a flat +500.
+- Introduction levels are 1, 2, 3, 4, 7, 10, 14, 18, respectively.
+  Pontan appears earlier than NES stage 48 for this smaller endless game.
+- Existing counts remain: 2 enemies at levels 1–2, 3 at 3–4, 4 at 5–6,
+  5 at 7–8, and 6 from level 9. Lineups are adapted, not original NES waves.
+- Existing balloon art is preserved. Seven new species use the unchanged
+  `images/BombermanNESEnemies.png` sheet, with cached background removal
+  and species-specific walking/death frame selection in `assets.js`.
+- `images/ASSET_SOURCES.md` records the NES sheet and behavioral reference.
+- The blue marker is removed; the HUD lists the species present.
+- All 43 tests pass, including passage rules, pursuit detours, death and
+  rewards, progression, and speeds at 20/30/60/144 FPS.
+- The user will perform visual/browser review; no browser playtest was run
+  for this change at their request.
+- No engine, dependency, player movement, or explosion-art changes.
+
 ## Remaining Visual Direction
 
 - Aim for a coherent, polished retro Bomberman, not a different visual identity.
@@ -196,10 +225,9 @@ The user approved the sample board and its integration on 2026-10-04.
 
 ## Suggested Prompt for the Next Chat
 
-Read PROJECT_CONTEXT.md and the current code. Movement, original death sprites,
-visual feedback, sounds, pursuit behavior, and level tuning are implemented;
-34 tests cover the current behavior. Review the gameplay feel with the user.
-The approved board textures are integrated. Remaining discussed visual work
-concerns HUD, menus, palette alignment, and sprite proportions. Preserve the existing Canvas framework, movement speed,
-collision rules, approved explosions, and sprite sheets. Do not add dependencies
-or refactor unrelated systems.
+Read PROJECT_CONTEXT.md and the current code. Eight classic enemy species are
+implemented with adapted level lineups, movement speeds, pursuit, crate passage,
+and original scores; 43 tests pass. The user is doing visual/gameplay review.
+Preserve the Canvas framework, player movement, approved board textures,
+explosions, balloon art, and power-up icons. Address specific feedback without
+adding dependencies or refactoring unrelated systems.

@@ -75,16 +75,16 @@ class GameController {
     this.player.prepareForLevel({ row: 1, col: 1 });
     this.bombSystem.reset();
     this.feedback = [];
+    const lineup = getEnemyLineup(this.levelNumber);
     this.enemies = this.level
-      .getEnemySpawnTiles(Math.min(2 + Math.floor((this.levelNumber - 1) / 2), 6))
+      .getEnemySpawnTiles(lineup.length)
       .map(
         (spawnTile, index) =>
           new EnemyController({
             spawnTile,
             cellSize: this.cellSize,
             levelNumber: this.levelNumber,
-            baseSpeed: 165,
-            behavior: this.levelNumber >= 3 && index === 0 ? 'chaser' : 'wanderer',
+            species: lineup[index],
           })
       );
 
@@ -251,8 +251,8 @@ class GameController {
       }
 
       if (event.type === 'enemy-hit') {
-        this.score += 500;
-        this.addFeedback('reward', event.position, 0.65, '+500');
+        this.score += event.score;
+        this.addFeedback('reward', event.position, 0.65, `+${event.score}`);
       }
 
       if (event.type === 'player-hit') {
@@ -429,9 +429,7 @@ class GameController {
       return this.level.doorOpen ? 'Exit open' : 'Find the hidden door';
     }
 
-    return this.enemies.some((enemy) => enemy.behavior === 'chaser')
-      ? 'Blue marker: pursuer'
-      : 'Clear enemies and break crates';
+    return [...new Set(this.enemies.map((enemy) => enemy.definition.name))].join(' · ');
   }
 }
 

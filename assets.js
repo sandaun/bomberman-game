@@ -55,6 +55,7 @@ const ASSET_MANIFEST = {
     player: 'images/BombermanPlayers.png',
     enemy: 'images/enemy2.png',
     enemyDeath: 'images/BombermanEnemies.png',
+    enemyNES: 'images/BombermanNESEnemies.png',
   },
   effects: {
     bombSheet: 'images/BombermanBombsExplosions.png',
@@ -165,6 +166,36 @@ const SPRITE_DEFINITIONS = {
   },
 };
 
+// NES sheet: six walking poses, then a hit pose and a shared shrinking sequence.
+function createNESEnemySprite(row, burstRow) {
+  return {
+    spriteKey: 'characters.enemyNES',
+    frameWidth: 16,
+    frameHeight: 16,
+    drawScale: 0.74,
+    frames: [0, 16, 32, 48, 64, 80].map((x) => ({ x, y: row })),
+    deathDuration: 0.45,
+    deathFrameWidth: 16,
+    deathFrameHeight: 16,
+    deathFrames: [{ x: 96, y: row }, ...[112, 128, 144, 160].map((x) => ({ x, y: burstRow }))],
+  };
+}
+
+const ENEMY_SPRITES = {
+  ballom: { ...SPRITE_DEFINITIONS.enemy, spriteKey: 'characters.enemy', deathSpriteKey: 'characters.enemyDeath' },
+  onil: createNESEnemySprite(255, 287),
+  dahl: createNESEnemySprite(271, 271),
+  minvo: createNESEnemySprite(287, 239),
+  kondoria: createNESEnemySprite(303, 287),
+  ovapi: createNESEnemySprite(319, 271),
+  pass: createNESEnemySprite(335, 239),
+  pontan: {
+    ...createNESEnemySprite(351, 271),
+    frames: [0, 16, 32, 48, 64].map((x) => ({ x, y: 351 })),
+    deathFrames: [{ x: 96, y: 319 }, ...[112, 128, 144, 160].map((x) => ({ x, y: 271 }))],
+  },
+};
+
 class AssetStore {
   constructor(manifest) {
     this.manifest = manifest;
@@ -214,4 +245,5 @@ window.DIRECTION_VECTORS = DIRECTION_VECTORS;
 window.OPPOSITE_DIRECTIONS = OPPOSITE_DIRECTIONS;
 window.ASSET_MANIFEST = ASSET_MANIFEST;
 window.SPRITE_DEFINITIONS = SPRITE_DEFINITIONS;
+window.ENEMY_SPRITES = ENEMY_SPRITES;
 window.AssetStore = AssetStore;

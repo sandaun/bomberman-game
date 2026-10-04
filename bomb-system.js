@@ -165,7 +165,7 @@ class BombSystem {
         )
       ) {
         enemy.kill();
-        this.events.push({ type: 'enemy-hit', position: { ...enemy.renderPosition } });
+        this.events.push({ type: 'enemy-hit', score: enemy.scoreValue, position: { ...enemy.renderPosition } });
       }
     });
   }

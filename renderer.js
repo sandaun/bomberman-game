@@ -7,6 +7,7 @@ class Renderer {
     this.rows = config.rows;
     this.boardTextures = null;
     this.background = null;
+    this.enemyNESImage = null;
     this.reducedMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches || false;
   }
 
@@ -189,52 +190,52 @@ class Renderer {
     this.ctx.restore();
   }
 
-  drawEnemies(enemies, time) {
-    const sprite = this.assetStore.get('characters.enemy');
-    const deathSprite = this.assetStore.get('characters.enemyDeath');
-    const definition = SPRITE_DEFINITIONS.enemy;
-
-    enemies.forEach((enemy) => {
-      if (!enemy.isActive()) {
-        return;
-      }
-
-      if (enemy.state === ENTITY_STATES.DYING) {
-        if (deathSprite?.complete) {
-          this.drawDeathSprite(enemy, deathSprite, definition);
+  getEnemyImage(key) {
+    const source = this.assetStore.get(key);
+    if (key !== 'characters.enemyNES' || !source?.complete) return source;
+    if (!this.enemyNESImage) {
+      const canvas = document.createElement('canvas');
+      canvas.width = source.naturalWidth;
+      canvas.height = source.naturalHeight;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(source, 0, 0);
+      const pixels = ctx.getImageData(0, 0, canvas.width, canvas.height);
+      // The unchanged source sheet uses two green background colors.
+      for (let index = 0; index < pixels.data.length; index += 4) {
+        const [red, green, blue] = pixels.data.subarray(index, index + 3);
+        if (blue === 0 && ((red === 12 && green === 72) || (red === 56 && green === 135))) {
+          pixels.data[index + 3] = 0;
         }
-        return;
       }
-      if (!sprite?.complete) {
-        return;
-      }
+      ctx.putImageData(pixels, 0, 0);
+      this.enemyNESImage = canvas;
+    }
+    return this.enemyNESImage;
+  }
 
+  drawEnemies(enemies, time) {
+    enemies.forEach((enemy) => {
+      if (!enemy.isActive()) return;
+      const definition = ENEMY_SPRITES[enemy.species];
+      const key = enemy.state === ENTITY_STATES.DYING
+        ? definition.deathSpriteKey || definition.spriteKey
+        : definition.spriteKey;
+      if (!this.assetStore.get(key)?.complete) return;
+      const sprite = this.getEnemyImage(key);
+      if (enemy.state === ENTITY_STATES.DYING) {
+        this.drawDeathSprite(enemy, sprite, definition);
+        return;
+      }
       const frameIndex = Math.floor(time / 180) % definition.frames.length;
       const frame = definition.frames[frameIndex];
       const drawSize = this.cellSize * definition.drawScale;
       const offset = (this.cellSize - drawSize) / 2;
-
-      this.ctx.save();
-      if (enemy.behavior === 'chaser') {
-        this.ctx.fillStyle = '#65e5ff';
-        this.ctx.fillRect(
-          enemy.renderPosition.x + this.cellSize / 2 - 3,
-          enemy.renderPosition.y + 1, 6, 4
-        );
-      }
-
       this.ctx.drawImage(
         sprite,
-        frame.x,
-        frame.y,
-        definition.frameWidth,
-        definition.frameHeight,
-        enemy.renderPosition.x + offset,
-        enemy.renderPosition.y + offset + 1,
-        drawSize,
-        drawSize
+        frame.x, frame.y, definition.frameWidth, definition.frameHeight,
+        enemy.renderPosition.x + offset, enemy.renderPosition.y + offset + 1,
+        drawSize, drawSize
       );
-      this.ctx.restore();
     });
   }
 

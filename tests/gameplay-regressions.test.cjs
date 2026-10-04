@@ -152,16 +152,16 @@ test('a pursuer approaches nearby players only through walkable, unbombed tiles'
   const { EnemyController } = context.window;
   const player = new PlayerController({ cellSize: 50 });
   player.spawnAt({ row: 3, col: 5 });
-  const enemy = new EnemyController({ cellSize: 50, spawnTile: { row: 3, col: 3 }, levelNumber: 3, behavior: 'chaser' });
+  const enemy = new EnemyController({ cellSize: 50, spawnTile: { row: 3, col: 3 }, levelNumber: 3, species: 'onil' });
   context.Math = Object.create(Math); context.Math.random = () => 0;
   const bombs = new BombSystem();
-  const level = { isWalkable: () => true };
+  const level = { ...openLevel, isWalkable: () => true };
   try {
     assert.equal(enemy.chooseDirection(level, bombs, player), 'right');
     bombs.bombs.push({ row: 3, col: 4 });
     assert.notEqual(enemy.chooseDirection(level, bombs, player), 'right');
     bombs.reset();
-    assert.notEqual(enemy.chooseDirection({ isWalkable: (row, col) => col !== 4 }, bombs, player), 'right');
+    assert.notEqual(enemy.chooseDirection({ ...openLevel, isWalkable: (row, col) => col !== 4 }, bombs, player), 'right');
     player.spawnAt({ row: 3, col: 12 });
     assert.equal(enemy.chooseDirection(level, bombs, player), 'left');
     player.spawnAt({ row: 3, col: 5 }); player.kill();
@@ -169,13 +169,17 @@ test('a pursuer approaches nearby players only through walkable, unbombed tiles'
   } finally { delete context.Math; }
 });
 
-test('difficulty introduces one pursuer at level three and adds enemies every two levels', () => {
+test('difficulty retains enemy counts and introduces classic species progressively', () => {
   const { game } = setup();
-  for (const [level, count] of [[1, 2], [2, 2], [3, 3], [4, 3], [5, 4], [9, 6], [10, 6]]) {
+  for (const [level, count, species] of [
+    [1, 2, 'ballom'], [2, 2, 'onil'], [3, 3, 'dahl'], [4, 3, 'minvo'],
+    [5, 4, 'minvo'], [7, 5, 'kondoria'], [9, 6, 'kondoria'],
+    [10, 6, 'ovapi'], [14, 6, 'pass'], [18, 6, 'pontan'], [50, 6, 'pontan'],
+  ]) {
     game.levelNumber = level; game.startLevel();
     assert.equal(game.enemies.length, count);
-    assert.equal(game.enemies.filter((enemy) => enemy.behavior === 'chaser').length, level >= 3 ? 1 : 0);
-    assert.equal(game.enemies[0].moveSpeed, 165 + level * 12);
+    assert.ok(game.enemies.some((enemy) => enemy.species === species));
+    assert.ok(!game.getStatusLabel().includes('Blue marker'));
   }
 });
 

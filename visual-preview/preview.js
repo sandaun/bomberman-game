@@ -67,7 +67,7 @@ async function bootPreview() {
   player.spawnAt({ row: 3, col: 3 });
   const enemies = [
     new EnemyController({ cellSize: 50, levelNumber: 1, spawnTile: { row: 5, col: 9 } }),
-    new EnemyController({ cellSize: 50, levelNumber: 1, spawnTile: { row: 9, col: 3 }, behavior: 'chaser' }),
+    new EnemyController({ cellSize: 50, levelNumber: 1, spawnTile: { row: 9, col: 3 }, species: 'onil' }),
   ];
   const bombSystem = new BombSystem();
   bombSystem.bombs.push({ row: 3, col: 5, range: 1, fuse: 2.3, maxFuse: 2.3 });
