@@ -3,6 +3,7 @@ class EnemyController {
     this.cellSize = config.cellSize;
     this.baseSpeed = config.baseSpeed || 165;
     this.type = 'enemy';
+    this.behavior = config.behavior || 'wanderer';
     this.direction = 'left';
     this.state = ENTITY_STATES.IDLE;
     this.spawnAt(config.spawnTile);
@@ -28,7 +29,7 @@ class EnemyController {
     return this.state === ENTITY_STATES.WALKING;
   }
 
-  update(deltaTime, level, bombSystem) {
+  update(deltaTime, level, bombSystem, player) {
     if (this.state === ENTITY_STATES.DYING) {
       this.deathTimer = Math.max(0, this.deathTimer - deltaTime);
       if (this.deathTimer === 0) {
@@ -42,7 +43,7 @@ class EnemyController {
       return;
     }
 
-    const nextDirection = this.chooseDirection(level, bombSystem);
+    const nextDirection = this.chooseDirection(level, bombSystem, player);
     if (!nextDirection) {
       return;
     }
@@ -74,7 +75,7 @@ class EnemyController {
     }
   }
 
-  chooseDirection(level, bombSystem) {
+  chooseDirection(level, bombSystem, player) {
     const availableDirections = Object.entries(DIRECTION_VECTORS)
       .filter(([, vector]) => {
         const nextRow = this.gridPosition.row + vector.row;
@@ -90,6 +91,24 @@ class EnemyController {
 
     if (!availableDirections.length) {
       return null;
+    }
+
+    if (this.behavior === 'chaser' && player?.canAct()) {
+      const distance =
+        Math.abs(player.gridPosition.row - this.gridPosition.row) +
+        Math.abs(player.gridPosition.col - this.gridPosition.col);
+      if (distance <= 6 && Math.random() < 0.65) {
+        const approaching = availableDirections.filter((direction) => {
+          const vector = DIRECTION_VECTORS[direction];
+          const nextDistance =
+            Math.abs(player.gridPosition.row - this.gridPosition.row - vector.row) +
+            Math.abs(player.gridPosition.col - this.gridPosition.col - vector.col);
+          return nextDistance < distance;
+        });
+        if (approaching.length) {
+          return approaching[Math.floor(Math.random() * approaching.length)];
+        }
+      }
     }
 
     const filteredDirections =
@@ -125,7 +144,7 @@ class EnemyController {
     }
 
     this.state = ENTITY_STATES.DYING;
-    this.deathTimer = 0.45;
+    this.deathTimer = SPRITE_DEFINITIONS.enemy.deathDuration;
   }
 }
 

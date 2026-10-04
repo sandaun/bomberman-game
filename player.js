@@ -120,7 +120,7 @@ class PlayerController {
     }
 
     this.state = ENTITY_STATES.DYING;
-    this.deathTimer = 0.55;
+    this.deathTimer = SPRITE_DEFINITIONS.player.deathDuration;
   }
 
   addBombCapacity() {

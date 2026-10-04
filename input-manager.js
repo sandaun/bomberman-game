@@ -11,6 +11,8 @@ class InputManager {
       KeyD: 'right',
     };
     this.activeDirections = [];
+    this.bufferedDirection = null;
+    this.bufferTimeRemaining = 0;
     this.onPlaceBomb = null;
     this.onPause = null;
     this.handleKeyDown = this.handleKeyDown.bind(this);
@@ -32,6 +34,11 @@ class InputManager {
 
     if (direction) {
       event.preventDefault();
+      if (event.repeat) {
+        return;
+      }
+      this.bufferedDirection = direction;
+      this.bufferTimeRemaining = 0.22;
       this.activeDirections = this.activeDirections.filter(
         (value) => value !== direction
       );
@@ -63,12 +70,31 @@ class InputManager {
     );
   }
 
-  getDirectionIntent() {
-    return this.activeDirections[this.activeDirections.length - 1] || null;
+  update(deltaTime) {
+    this.bufferTimeRemaining = Math.max(0, this.bufferTimeRemaining - deltaTime);
+    if (this.bufferTimeRemaining === 0) {
+      this.bufferedDirection = null;
+    }
+  }
+
+  getMovementDirections() {
+    return [...new Set([
+      this.bufferedDirection,
+      ...this.activeDirections.slice().reverse(),
+    ])].filter(Boolean);
+  }
+
+  consumeDirection(direction) {
+    if (this.bufferedDirection === direction) {
+      this.bufferedDirection = null;
+      this.bufferTimeRemaining = 0;
+    }
   }
 
   clear() {
     this.activeDirections = [];
+    this.bufferedDirection = null;
+    this.bufferTimeRemaining = 0;
   }
 }
 

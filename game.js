@@ -8,6 +8,7 @@ class GameController {
     this.assetStore = config.assetStore;
     this.hud = config.hud;
     this.input = config.input;
+    this.sounds = config.sounds || null;
 
     this.renderer = new Renderer({
       ctx: this.ctx,
@@ -20,9 +21,11 @@ class GameController {
     this.player = new PlayerController({ cellSize: this.cellSize });
     this.bombSystem = new BombSystem();
     this.enemies = [];
+    this.feedback = [];
     this.level = null;
     this.levelNumber = 1;
     this.score = 0;
+    this.continuesRemaining = 3;
     this.state = GAME_STATES.START;
     this.lastFrameTime = 0;
     this.animationFrameId = null;
@@ -39,7 +42,9 @@ class GameController {
   }
 
   startNewGame() {
+    this.sounds?.unlock();
     this.score = 0;
+    this.continuesRemaining = 3;
     this.levelNumber = 1;
     this.player.resetForNewGame();
     this.startLevel();
@@ -48,6 +53,7 @@ class GameController {
 
   restartRun() {
     this.score = 0;
+    this.continuesRemaining = 3;
     this.levelNumber = 1;
     this.player.resetForNewGame();
     this.startLevel();
@@ -59,6 +65,7 @@ class GameController {
   }
 
   startLevel() {
+    this.sounds?.stop();
     this.level = new LevelState({
       columns: this.columns,
       rows: this.rows,
@@ -67,15 +74,17 @@ class GameController {
 
     this.player.prepareForLevel({ row: 1, col: 1 });
     this.bombSystem.reset();
+    this.feedback = [];
     this.enemies = this.level
-      .getEnemySpawnTiles(Math.min(2 + this.levelNumber - 1, 6))
+      .getEnemySpawnTiles(Math.min(2 + Math.floor((this.levelNumber - 1) / 2), 6))
       .map(
-        (spawnTile) =>
+        (spawnTile, index) =>
           new EnemyController({
             spawnTile,
             cellSize: this.cellSize,
             levelNumber: this.levelNumber,
             baseSpeed: 165,
+            behavior: this.levelNumber >= 3 && index === 0 ? 'chaser' : 'wanderer',
           })
       );
 
@@ -95,12 +104,15 @@ class GameController {
     }
 
     if (this.state === GAME_STATES.PLAYING) {
+      this.input.clear();
+      this.sounds?.stop();
       this.state = GAME_STATES.PAUSED;
       this.hud.showOverlay({
         title: 'Paused',
         message: 'Catch your breath, then jump back into the maze.',
         primaryLabel: 'Resume',
         onPrimary: () => {
+          this.input.clear();
           this.state = GAME_STATES.PLAYING;
           this.hud.hideOverlay();
         },
@@ -111,6 +123,7 @@ class GameController {
     }
 
     if (this.state === GAME_STATES.PAUSED) {
+      this.input.clear();
       this.state = GAME_STATES.PLAYING;
       this.hud.hideOverlay();
     }
@@ -121,7 +134,10 @@ class GameController {
       return;
     }
 
-    this.bombSystem.placeBomb(this.player);
+    this.sounds?.unlock();
+    if (this.bombSystem.placeBomb(this.player)) {
+      this.sounds?.play('place');
+    }
   }
 
   loop(timestamp) {
@@ -130,6 +146,11 @@ class GameController {
 
     if (this.state === GAME_STATES.PLAYING) {
       this.update(deltaTime);
+    } else if (
+      this.state === GAME_STATES.LOST &&
+      this.player.state === ENTITY_STATES.DYING
+    ) {
+      this.updateDeathFeedback(deltaTime);
     }
 
     this.renderFrame(timestamp);
@@ -137,31 +158,101 @@ class GameController {
   }
 
   update(deltaTime) {
-    const directionIntent = this.input.getDirectionIntent();
-    if (directionIntent) {
-      this.player.tryMove(directionIntent, this.level, this.bombSystem);
-    }
-
-    this.player.update(deltaTime);
-    this.enemies.forEach((enemy) => enemy.update(deltaTime, this.level, this.bombSystem));
+    this.updateFeedback(deltaTime);
+    this.updatePlayerMovement(deltaTime);
+    this.enemies.forEach((enemy) =>
+      enemy.update(deltaTime, this.level, this.bombSystem, this.player)
+    );
 
     const events = this.bombSystem.update(deltaTime, this.level, this.player, this.enemies);
     this.handleBombEvents(events);
+    if (!this.player.canAct()) {
+      this.cleanupEnemies();
+      return;
+    }
     this.handleCollectibles();
     this.resolveEnemyContact();
     this.cleanupEnemies();
+    if (!this.player.canAct()) {
+      return;
+    }
     this.tryOpenDoor();
     this.checkWinCondition();
   }
 
+  updatePlayerMovement(deltaTime) {
+    let remainingTime = deltaTime;
+
+    while (remainingTime > 0) {
+      if (!this.player.isMoving() && this.player.canAct()) {
+        for (const direction of this.input.getMovementDirections()) {
+          if (this.player.tryMove(direction, this.level, this.bombSystem)) {
+            this.input.consumeDirection(direction);
+            break;
+          }
+        }
+      }
+
+      if (!this.player.isMoving()) {
+        this.player.update(remainingTime);
+        this.input.update(remainingTime);
+        break;
+      }
+
+      // Carry unused frame time across intersections to keep movement smooth.
+      const timeToArrival =
+        ((1 - this.player.travelProgress) * this.player.cellSize) /
+        this.player.moveSpeed;
+      const step = Math.min(remainingTime, timeToArrival);
+      this.player.update(step);
+      this.input.update(step);
+      remainingTime -= step;
+    }
+  }
+
+  addFeedback(type, position, duration, label = '', color = '#ffd166') {
+    this.feedback.push({ type, ...position, timer: duration, duration, label, color });
+  }
+
+  updateFeedback(deltaTime) {
+    this.feedback.forEach((effect) => {
+      effect.timer = Math.max(0, effect.timer - deltaTime);
+    });
+    this.feedback = this.feedback.filter((effect) => effect.timer > 0);
+  }
+
+  updateDeathFeedback(deltaTime) {
+    this.player.update(deltaTime);
+    this.enemies.forEach((enemy) => {
+      if (enemy.state === ENTITY_STATES.DYING) {
+        enemy.update(deltaTime, this.level, this.bombSystem, this.player);
+      }
+    });
+    this.bombSystem.updateExplosions(deltaTime);
+    this.updateFeedback(deltaTime);
+    this.cleanupEnemies();
+    if (this.player.state === ENTITY_STATES.DEAD) {
+      this.showGameOver();
+    }
+  }
+
   handleBombEvents(events) {
+    if (events.some((event) => event.type === 'bomb-exploded')) {
+      this.sounds?.play('explosion');
+    }
     events.forEach((event) => {
       if (event.type === 'breakable-destroyed') {
         this.score += 100;
+        this.addFeedback(
+          'breakable',
+          { x: event.col * this.cellSize, y: event.row * this.cellSize },
+          0.4
+        );
       }
 
       if (event.type === 'enemy-hit') {
         this.score += 500;
+        this.addFeedback('reward', event.position, 0.65, '+500');
       }
 
       if (event.type === 'player-hit') {
@@ -176,14 +267,20 @@ class GameController {
       this.player.gridPosition.col
     );
 
+    if (collected) {
+      this.sounds?.play('pickup');
+    }
+
     if (collected === HIDDEN_CONTENT.POWERUP_BOMB) {
       this.player.addBombCapacity();
       this.score += 250;
+      this.addFeedback('reward', this.player.renderPosition, 0.7, '+1 BOMB');
     }
 
     if (collected === HIDDEN_CONTENT.POWERUP_RANGE) {
       this.player.addRange();
       this.score += 250;
+      this.addFeedback('reward', this.player.renderPosition, 0.7, '+1 RANGE', '#ff6b6b');
     }
   }
 
@@ -221,6 +318,7 @@ class GameController {
       return;
     }
 
+    this.input.clear();
     this.state = GAME_STATES.WON;
     this.score += 1000;
     this.hud.showOverlay({
@@ -238,11 +336,40 @@ class GameController {
       return;
     }
 
+    this.input.clear();
     this.player.kill();
     this.state = GAME_STATES.LOST;
+  }
+
+  continueRun() {
+    if (
+      this.state !== GAME_STATES.LOST ||
+      this.player.state !== ENTITY_STATES.DEAD ||
+      this.continuesRemaining === 0
+    ) {
+      return;
+    }
+
+    this.continuesRemaining -= 1;
+    this.startLevel();
+  }
+
+  showGameOver() {
+    if (this.continuesRemaining > 0) {
+      this.hud.showOverlay({
+        title: 'Continue?',
+        message: `${this.continuesRemaining} continues left. Retry level ${this.levelNumber} with your score and upgrades.`,
+        primaryLabel: 'Continue',
+        onPrimary: () => this.continueRun(),
+        secondaryLabel: 'Restart run',
+        onSecondary: () => this.restartRun(),
+      });
+      return;
+    }
+
     this.hud.showOverlay({
-      title: 'You were caught',
-      message: 'Bombs, enemies, and tighter lanes are all active now. One more try?',
+      title: 'Game over',
+      message: 'No continues left. Start a new run to try again.',
       primaryLabel: 'Restart run',
       onPrimary: () => this.restartRun(),
       secondaryLabel: 'Back to title',
@@ -266,11 +393,13 @@ class GameController {
       player: this.player,
       enemies: this.enemies,
       bombSystem: this.bombSystem,
+      feedback: this.feedback,
       time: timestamp,
     });
 
     this.hud.update({
       score: this.score,
+      continues: this.continuesRemaining,
       level: this.levelNumber,
       bombsPlaced: this.player.activeBombs,
       maxBombs: this.player.maxBombs,
@@ -291,14 +420,18 @@ class GameController {
     }
 
     if (this.state === GAME_STATES.LOST) {
-      return 'Run over';
+      return this.player.state === ENTITY_STATES.DYING
+        ? 'You were hit'
+        : this.continuesRemaining > 0 ? 'Continue available' : 'Run over';
     }
 
     if (!this.enemies.length) {
       return this.level.doorOpen ? 'Exit open' : 'Find the hidden door';
     }
 
-    return 'Clear enemies and break crates';
+    return this.enemies.some((enemy) => enemy.behavior === 'chaser')
+      ? 'Blue marker: pursuer'
+      : 'Clear enemies and break crates';
   }
 }
 

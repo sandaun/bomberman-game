@@ -159,6 +159,7 @@ canvas {
 }
 
 #bomberman {
+  image-rendering: pixelated;
   display: block;
   width: min(92vw, 860px);
   max-width: 100%;

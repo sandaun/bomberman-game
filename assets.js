@@ -46,14 +46,15 @@ const OPPOSITE_DIRECTIONS = {
 
 const ASSET_MANIFEST = {
   board: {
-    background: 'images/grass.png',
-    wall: 'images/brick.png',
-    breakable: 'images/wood.png',
     door: 'images/door.png',
+  },
+  items: {
+    sheet: 'images/SuperBomberman2Items.png',
   },
   characters: {
     player: 'images/BombermanPlayers.png',
     enemy: 'images/enemy2.png',
+    enemyDeath: 'images/BombermanEnemies.png',
   },
   effects: {
     bombSheet: 'images/BombermanBombsExplosions.png',
@@ -64,10 +65,34 @@ const ASSET_MANIFEST = {
 };
 
 const SPRITE_DEFINITIONS = {
+  powerup: {
+    frameWidth: 16,
+    frameHeight: 16,
+    drawScale: 0.64,
+    frames: {
+      [TILE_TYPES.POWERUP_BOMB]: { x: 0, y: 0 },
+      [TILE_TYPES.POWERUP_RANGE]: { x: 16, y: 0 },
+    },
+  },
   player: {
     frameWidth: 18,
     frameHeight: 22,
     drawScale: 0.96,
+    deathDuration: 0.55,
+    deathFrameWidth: 24,
+    deathFrameHeight: 24,
+    // Second row: hit poses followed by the original dissolving sequence.
+    deathFrames: [
+      { x: 9, y: 29 },
+      { x: 42, y: 29 },
+      { x: 74, y: 29 },
+      { x: 107, y: 29 },
+      { x: 140, y: 29 },
+      { x: 173, y: 29 },
+      { x: 206, y: 29 },
+      { x: 239, y: 29 },
+      { x: 272, y: 29 },
+    ],
     animations: {
       down: {
         idle: [{ x: 4, y: 5, flipX: false }],
@@ -103,6 +128,19 @@ const SPRITE_DEFINITIONS = {
     frameWidth: 48,
     frameHeight: 48,
     drawScale: 0.74,
+    deathDuration: 0.45,
+    deathFrameWidth: 16,
+    deathFrameHeight: 18,
+    // Balloon hit poses, then the sheet's shared disappearance sequence A.
+    deathFrames: [
+      { x: 55, y: 4 },
+      { x: 72, y: 4 },
+      { x: 13, y: 411 },
+      { x: 30, y: 411 },
+      { x: 47, y: 411 },
+      { x: 64, y: 411 },
+      { x: 81, y: 411 },
+    ],
     frames: [
       { x: 0, y: 0 },
       { x: 50, y: 0 },

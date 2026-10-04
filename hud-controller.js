@@ -4,6 +4,7 @@ class HudController {
     this.gameScreen = config.gameScreen;
     this.scoreValue = config.scoreValue;
     this.levelValue = config.levelValue;
+    this.continuesValue = config.continuesValue;
     this.bombsValue = config.bombsValue;
     this.rangeValue = config.rangeValue;
     this.enemiesValue = config.enemiesValue;
@@ -30,6 +31,7 @@ class HudController {
   update(stats) {
     this.scoreValue.textContent = String(stats.score);
     this.levelValue.textContent = String(stats.level);
+    this.continuesValue.textContent = String(stats.continues);
     this.bombsValue.textContent = `${stats.bombsPlaced}/${stats.maxBombs}`;
     this.rangeValue.textContent = String(stats.range);
     this.enemiesValue.textContent = String(stats.enemies);

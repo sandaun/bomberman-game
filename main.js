@@ -10,6 +10,7 @@ window.addEventListener('DOMContentLoaded', async () => {
     gameScreen: document.getElementById('gameScreen'),
     scoreValue: document.getElementById('hudScore'),
     levelValue: document.getElementById('hudLevel'),
+    continuesValue: document.getElementById('hudContinues'),
     bombsValue: document.getElementById('hudBombs'),
     rangeValue: document.getElementById('hudRange'),
     enemiesValue: document.getElementById('hudEnemies'),
@@ -23,6 +24,7 @@ window.addEventListener('DOMContentLoaded', async () => {
   });
 
   const input = new InputManager();
+  const sounds = new SoundSystem();
   const game = new GameController({
     canvas,
     ctx,
@@ -32,6 +34,7 @@ window.addEventListener('DOMContentLoaded', async () => {
     assetStore,
     hud,
     input,
+    sounds,
   });
 
   document.getElementById('startButton').addEventListener('click', () => {
@@ -40,6 +43,16 @@ window.addEventListener('DOMContentLoaded', async () => {
 
   document.getElementById('pauseButton').addEventListener('click', () => {
     game.togglePause();
+  });
+
+  const soundButton = document.getElementById('soundButton');
+  soundButton.disabled = !sounds.enabled;
+  soundButton.textContent = sounds.enabled ? 'Sound: on' : 'Sound unavailable';
+  soundButton.setAttribute('aria-pressed', String(sounds.enabled));
+  soundButton.addEventListener('click', () => {
+    sounds.setEnabled(!sounds.enabled);
+    soundButton.textContent = sounds.enabled ? 'Sound: on' : 'Sound: off';
+    soundButton.setAttribute('aria-pressed', String(sounds.enabled));
   });
 
   game.boot();

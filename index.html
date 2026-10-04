@@ -42,6 +42,10 @@
               <strong id="hudLevel">1</strong>
             </article>
             <article class="hud-chip">
+              <span class="hud-chip__label">Continues</span>
+              <strong id="hudContinues">3</strong>
+            </article>
+            <article class="hud-chip">
               <span class="hud-chip__label">Bombs</span>
               <strong id="hudBombs">0/1</strong>
             </article>
@@ -56,6 +60,7 @@
           </div>
           <div class="hud__actions">
             <span class="hud-status" id="hudStatus">Ready</span>
+            <button class="button button--secondary" id="soundButton" aria-pressed="true">Sound: on</button>
             <button class="button button--secondary" id="pauseButton">Pause</button>
           </div>
         </header>
@@ -90,7 +95,9 @@
     <script src="bomb-system.js"></script>
     <script src="input-manager.js"></script>
     <script src="hud-controller.js"></script>
+    <script src="board-textures.js"></script>
     <script src="renderer.js"></script>
+    <script src="sound-system.js"></script>
     <script src="game.js"></script>
     <script src="main.js"></script>
   </body>

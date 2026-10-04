@@ -5,7 +5,8 @@ class LevelState {
     this.levelNumber = config.levelNumber;
     this.breakableCount = Math.min(16 + (this.levelNumber - 1) * 3, 40);
     this.grid = this.createGrid();
-    this.safeTiles = new Set(['1,1', '1,2', '2,1']);
+    // Keep two complete escape routes open around the starting pillar.
+    this.safeTiles = new Set(['1,1', '1,2', '1,3', '2,1', '2,3', '3,1', '3,2', '3,3']);
     this.doorPosition = null;
     this.doorRevealed = false;
     this.doorOpen = false;
@@ -43,21 +44,11 @@ class LevelState {
   }
 
   buildBreakables() {
-    let placed = 0;
-
-    while (placed < this.breakableCount) {
-      const candidate = this.getRandomTileByType(TILE_TYPES.EMPTY);
-      if (!candidate) {
-        return;
-      }
-
-      if (this.safeTiles.has(`${candidate.row},${candidate.col}`)) {
-        continue;
-      }
-
-      this.grid[candidate.row][candidate.col].type = TILE_TYPES.BREAKABLE;
-      placed += 1;
-    }
+    const candidates = this.shuffle(this.getTilesByType(TILE_TYPES.EMPTY))
+      .filter(({ row, col }) => !this.safeTiles.has(`${row},${col}`));
+    candidates.slice(0, this.breakableCount).forEach(({ row, col }) => {
+      this.grid[row][col].type = TILE_TYPES.BREAKABLE;
+    });
   }
 
   hideDoor() {
@@ -89,21 +80,30 @@ class LevelState {
     );
   }
 
-  getRandomTileByType(type) {
-    const tiles = this.getTilesByType(type);
-    if (!tiles.length) {
-      return null;
-    }
-    return tiles[Math.floor(Math.random() * tiles.length)];
-  }
-
   getEnemySpawnTiles(count) {
-    return this.shuffle(this.getTilesByType(TILE_TYPES.EMPTY))
-      .filter(
-        ({ row, col }) =>
-          !this.safeTiles.has(`${row},${col}`) && row + col > 8
-      )
-      .slice(0, count);
+    if (count <= 0) {
+      return [];
+    }
+    const candidates = this.shuffle(this.getTilesByType(TILE_TYPES.EMPTY)).filter(
+      ({ row, col }) =>
+        !this.safeTiles.has(`${row},${col}`) && row + col > 8 &&
+        Object.values(DIRECTION_VECTORS).some((vector) =>
+          this.isWalkable(row + vector.row, col + vector.col)
+        )
+    );
+    const spawns = [];
+    for (const tile of candidates) {
+      const separated = spawns.every((spawn) =>
+        Math.abs(spawn.row - tile.row) + Math.abs(spawn.col - tile.col) >= 3
+      );
+      if (separated) {
+        spawns.push(tile);
+      }
+      if (spawns.length === count) {
+        break;
+      }
+    }
+    return spawns;
   }
 
   getTilesByType(type) {

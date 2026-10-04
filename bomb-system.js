@@ -54,13 +54,17 @@ class BombSystem {
       });
     }
 
+    this.updateExplosions(deltaTime);
+
+    this.applyExplosionDamage(player, enemies);
+    return this.events;
+  }
+
+  updateExplosions(deltaTime) {
     this.explosions.forEach((explosion) => {
       explosion.timer -= deltaTime;
     });
     this.explosions = this.explosions.filter((explosion) => explosion.timer > 0);
-
-    this.applyExplosionDamage(player, enemies);
-    return this.events;
   }
 
   explodeBomb(bombId, level, player) {
@@ -71,6 +75,7 @@ class BombSystem {
 
     const [bomb] = this.bombs.splice(bombIndex, 1);
     player.activeBombs = Math.max(0, player.activeBombs - 1);
+    this.events.push({ type: 'bomb-exploded' });
 
     const chainedBombIds = [];
     const tiles = this.buildExplosionTiles(bomb, level, chainedBombIds);
@@ -110,7 +115,7 @@ class BombSystem {
         if (tile.type === TILE_TYPES.BREAKABLE) {
           const result = level.destroyBreakable(row, col);
           if (result.destroyed) {
-            this.events.push({ type: 'breakable-destroyed' });
+            this.events.push({ type: 'breakable-destroyed', row, col });
           }
           if (result.revealed) {
             this.events.push({ type: 'tile-revealed', revealed: result.revealed });
@@ -160,7 +165,7 @@ class BombSystem {
         )
       ) {
         enemy.kill();
-        this.events.push({ type: 'enemy-hit' });
+        this.events.push({ type: 'enemy-hit', position: { ...enemy.renderPosition } });
       }
     });
   }
